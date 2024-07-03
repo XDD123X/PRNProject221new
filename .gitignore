@@ -1,0 +1,10 @@
+# .gitignore for Visual Studio
+.vs/
+*.vcxproj.user
+*.vcxproj.filters
+*.vcxproj
+*.sln
+*.user
+*.suo
+*.userosscache
+*.userprefs
