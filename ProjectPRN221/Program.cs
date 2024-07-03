@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Caching.Distributed;
+using ProjectPRN221.Core;
 namespace ProjectPRN221
 {
 	public class Program
@@ -8,11 +10,15 @@ namespace ProjectPRN221
 
 			// Add services to the container.
 			builder.Services.AddRazorPages();
+			//Add connection redis
+            builder.Services.AddStackExchangeRedisCache(options => {
+                options.Configuration = builder.Configuration.GetConnectionString("Redis");
+                options.InstanceName = "ProjectPRN221";
+            });
+            var app = builder.Build();
 
-			var app = builder.Build();
-
-			// Configure the HTTP request pipeline.
-			if (!app.Environment.IsDevelopment())
+            // Configure the HTTP request pipeline.
+            if (!app.Environment.IsDevelopment())
 			{
 				app.UseExceptionHandler("/Error");
 				// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
@@ -30,5 +36,5 @@ namespace ProjectPRN221
 
 			app.Run();
 		}
-	}
+}
 }
