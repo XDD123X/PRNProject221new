@@ -84,3 +84,11 @@ D:\PRNProject221new\ProjectPRN221\bin\Debug\net6.0\runtimes\browser\lib\net6.0\S
 D:\PRNProject221new\ProjectPRN221\bin\Debug\net6.0\runtimes\win\lib\netcoreapp3.0\System.Windows.Extensions.dll
 D:\PRNProject221new\ProjectPRN221\bin\Debug\net6.0\Humanizer.dll
 D:\PRNProject221new\ProjectPRN221\bin\Debug\net6.0\Microsoft.EntityFrameworkCore.Design.dll
+D:\PRNProject221new\ProjectPRN221\bin\Debug\net6.0\BouncyCastle.Cryptography.dll
+D:\PRNProject221new\ProjectPRN221\bin\Debug\net6.0\MailKit.dll
+D:\PRNProject221new\ProjectPRN221\bin\Debug\net6.0\MimeKit.dll
+D:\PRNProject221new\ProjectPRN221\bin\Debug\net6.0\System.Formats.Asn1.dll
+D:\PRNProject221new\ProjectPRN221\bin\Debug\net6.0\System.Security.Cryptography.Pkcs.dll
+D:\PRNProject221new\ProjectPRN221\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Security.Cryptography.Pkcs.dll
+D:\PRNProject221new\ProjectPRN221\bin\Debug\net6.0\NewId.dll
+D:\PRNProject221new\ProjectPRN221\bin\Debug\net6.0\BCrypt.Net-Next.dll
