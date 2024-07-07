@@ -60,7 +60,7 @@ namespace ProjectPRN221.Pages.Authentication
 						.Where(t => t.Email == txtEmail && t.IsDeleted == false && t.Type == "ACTIVE_ACCOUNT")
 						.OrderBy(t => t.Id)
 						.ToList();
-					if (token != null)
+					if (token != null && token.Count > 0)
 					{
 						Token activeAccount = (Token)token.FirstOrDefault();
 						Console.WriteLine("Email has token " + activeAccount.Content);

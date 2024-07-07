@@ -20,8 +20,20 @@ build_property._RazorSourceGeneratorDebug =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQXV0aGVudGljYXRpb25cQWN0aXZlQWNjb3VudC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/PRNProject221new/ProjectPRN221/Pages/Authentication/login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQXV0aGVudGljYXRpb25cbG9naW4uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/PRNProject221new/ProjectPRN221/Pages/Authentication/logout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQXV0aGVudGljYXRpb25cbG9nb3V0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/PRNProject221new/ProjectPRN221/Pages/Authentication/register.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQXV0aGVudGljYXRpb25ccmVnaXN0ZXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/PRNProject221new/ProjectPRN221/Pages/Authentication/ResendOtp.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQXV0aGVudGljYXRpb25cUmVzZW5kT3RwLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/PRNProject221new/ProjectPRN221/Pages/Error.cshtml]
