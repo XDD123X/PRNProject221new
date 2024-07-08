@@ -1,0 +1,144 @@
+﻿@page "{handler?}"
+@model ProjectPRN221.Pages.Quiz.ListsModel
+@using ProjectPRN221.Models
+@{
+    Course thisCourse = ViewData["course"] as Course;
+    int questionNumber = 0;
+    int test = (int)ViewData["test"];
+    Boolean isViewing = (Boolean)ViewData["isViewing"];
+    if (isViewing)
+    {
+
+    }
+}
+<style>
+    .Answer {
+        display: block;
+    }
+</style>
+<p>@test</p>
+<section class="pt-0">
+    <div class="container">
+        <h3>Quizz for @thisCourse.Title</h3>
+        <form id="quizForm" asp-page-handler="Answer" method="POST">
+            @foreach (Quiz q in thisCourse.Quizzes)
+            {
+                questionNumber++;
+                <div class="Question-@questionNumber">
+                    <p>
+                        Question @questionNumber: @q.Question
+                    </p>
+                    <div class="Answer">
+                        <div class="Choosen">
+                            <input type="radio" name="Answers[@(questionNumber)].SelectedOption" value="1" id="Answers[@(questionNumber)].SelectedOption" />
+                            <label for="question_@(questionNumber)_answer_1">@q.Option1</label>
+                        </div>
+                        <div class="Choosen">
+                            <input type="radio" name="Answers[@(questionNumber)].SelectedOption" value="2" id="Answers[@(questionNumber)].SelectedOption" />
+                            <label for="question_@(questionNumber)_answer_2">@q.Option2</label>
+                        </div>
+                        <div class="Choosen">
+                            <input type="radio" name="Answers[@(questionNumber)].SelectedOption" value="3" id="Answers[@(questionNumber)].SelectedOption" />
+                            <label for="question_@(questionNumber)_answer_3">@q.Option3</label>
+                        </div>
+                        <div class="Choosen">
+                            <input type="radio" name="Answers[@(questionNumber)].SelectedOption" value="4" id="Answers[@(questionNumber)].SelectedOption" />
+                            <label for="question_@(questionNumber)_answer_4">@q.Option4</label>
+                        </div>
+                    </div>
+                </div>
+
+            }
+            <input type="hidden" name="Answers[@(questionNumber)].QuestionNumber" value="@questionNumber" />
+
+            <input value="Get JAV" type="button" data-bs-toggle="modal" data-bs-target="#notification" />
+        </form>
+
+
+    </div>
+    <div class="modal fade" id="notification" tabindex="-1" aria-labelledby="ModalNotification" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="ModalNotification">Notification</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure ?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Nope</button>
+                    <button type="button" class="btn btn-primary">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    let totalQuestions = @thisCourse.Quizzes.Count;
+
+    function answer() {
+        let Answers = getAnswers(totalQuestions);
+
+        fetch('/Quiz/Lists/Answer', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(Answers)
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        // let formData = new FormData(document.getElementById('quizForm'));
+
+        // fetch('?handler=OnPostAnswer', {
+        //     method: 'POST',
+        //     headers: {
+        //         'Accept': 'application/json',
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify(Object.fromEntries(formData.entries()))
+        // })
+        //     .then(response => {
+        //         if (!response.ok) {
+        //             throw new Error('Network response was not ok');
+        //         }
+        //         return response.json();
+        //     })
+        //     .then(data => {
+        //         console.log('Success:', data);
+        //     })
+        //     .catch(error => {
+        //         console.error('Error:', error);
+        //     });
+    }
+
+    function getAnswers(totalQuestions) {
+        let answers = [];
+        for (let i = 1; i <= totalQuestions; i++) {
+            let questionDiv = document.querySelector(`.Question-${i}`);
+            if (questionDiv) {
+                let selectedOption = questionDiv.querySelector(`input[name="Answers[${i}].SelectedOption"]:checked`);
+                if (selectedOption) {
+                    answers.push({
+                        SelectedOption: selectedOption.value,
+                        QuestionNumber: i
+                    });
+                } else {
+                    answers.push({
+                        SelectionOption: -1,
+                        QuestionNumber: i
+                    });
+                }
+            }
+        }
+        return answers;
+    }
+
+
+</script>
