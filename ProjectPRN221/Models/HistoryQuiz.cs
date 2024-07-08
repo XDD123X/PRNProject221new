@@ -7,11 +7,11 @@ namespace ProjectPRN221.Models
     {
         public long Id { get; set; }
         public long? UserId { get; set; }
-        public long? CourseId { get; set; }
+        public long? QuizzId { get; set; }
         public int? Answer { get; set; }
         public bool? IsDeleted { get; set; }
 
-        public virtual Course? Course { get; set; }
+        public virtual Quiz? Quizz { get; set; }
         public virtual User? User { get; set; }
     }
 }

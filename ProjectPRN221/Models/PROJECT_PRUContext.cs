@@ -76,7 +76,7 @@ namespace ProjectPRN221.Models
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Courses)
                     .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK__courses__user_id__4E88ABD4");
+                    .HasConstraintName("FK__courses__user_id__3C69FB99");
             });
 
             modelBuilder.Entity<EnroledCourse>(entity =>
@@ -102,12 +102,12 @@ namespace ProjectPRN221.Models
                 entity.HasOne(d => d.Course)
                     .WithMany(p => p.EnroledCourses)
                     .HasForeignKey(d => d.CourseId)
-                    .HasConstraintName("FK__enroled_c__cours__52593CB8");
+                    .HasConstraintName("FK__enroled_c__cours__403A8C7D");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.EnroledCourses)
                     .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK__enroled_c__user___5165187F");
+                    .HasConstraintName("FK__enroled_c__user___3F466844");
             });
 
             modelBuilder.Entity<Explode>(entity =>
@@ -133,7 +133,7 @@ namespace ProjectPRN221.Models
                 entity.HasOne(d => d.Course)
                     .WithMany(p => p.Explodes)
                     .HasForeignKey(d => d.CourseId)
-                    .HasConstraintName("FK__explodes__course__5535A963");
+                    .HasConstraintName("FK__explodes__course__4316F928");
             });
 
             modelBuilder.Entity<HistoryQuiz>(entity =>
@@ -144,21 +144,21 @@ namespace ProjectPRN221.Models
 
                 entity.Property(e => e.Answer).HasColumnName("answer");
 
-                entity.Property(e => e.CourseId).HasColumnName("course_id");
-
                 entity.Property(e => e.IsDeleted).HasColumnName("is_deleted");
+
+                entity.Property(e => e.QuizzId).HasColumnName("quizz_id");
 
                 entity.Property(e => e.UserId).HasColumnName("user_id");
 
-                entity.HasOne(d => d.Course)
+                entity.HasOne(d => d.Quizz)
                     .WithMany(p => p.HistoryQuizzes)
-                    .HasForeignKey(d => d.CourseId)
-                    .HasConstraintName("FK__history_q__cours__5BE2A6F2");
+                    .HasForeignKey(d => d.QuizzId)
+                    .HasConstraintName("FK__history_q__quizz__49C3F6B7");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.HistoryQuizzes)
                     .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK__history_q__user___5AEE82B9");
+                    .HasConstraintName("FK__history_q__user___48CFD27E");
             });
 
             modelBuilder.Entity<Quiz>(entity =>
@@ -201,7 +201,7 @@ namespace ProjectPRN221.Models
                 entity.HasOne(d => d.Course)
                     .WithMany(p => p.Quizzes)
                     .HasForeignKey(d => d.CourseId)
-                    .HasConstraintName("FK__quizzes__course___5812160E");
+                    .HasConstraintName("FK__quizzes__course___45F365D3");
             });
 
             modelBuilder.Entity<Token>(entity =>
@@ -226,7 +226,7 @@ namespace ProjectPRN221.Models
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Tokens)
                     .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK__tokens__user_id__4BAC3F29");
+                    .HasConstraintName("FK__tokens__user_id__398D8EEE");
             });
 
             modelBuilder.Entity<User>(entity =>

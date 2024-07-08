@@ -9,7 +9,6 @@ namespace ProjectPRN221.Models
         {
             EnroledCourses = new HashSet<EnroledCourse>();
             Explodes = new HashSet<Explode>();
-            HistoryQuizzes = new HashSet<HistoryQuiz>();
             Quizzes = new HashSet<Quiz>();
         }
 
@@ -28,7 +27,6 @@ namespace ProjectPRN221.Models
         public virtual User? User { get; set; }
         public virtual ICollection<EnroledCourse> EnroledCourses { get; set; }
         public virtual ICollection<Explode> Explodes { get; set; }
-        public virtual ICollection<HistoryQuiz> HistoryQuizzes { get; set; }
         public virtual ICollection<Quiz> Quizzes { get; set; }
     }
 }

@@ -5,6 +5,11 @@ namespace ProjectPRN221.Models
 {
     public partial class Quiz
     {
+        public Quiz()
+        {
+            HistoryQuizzes = new HashSet<HistoryQuiz>();
+        }
+
         public long Id { get; set; }
         public long? CourseId { get; set; }
         public string? Question { get; set; }
@@ -16,5 +21,6 @@ namespace ProjectPRN221.Models
         public bool? IsDeleted { get; set; }
 
         public virtual Course? Course { get; set; }
+        public virtual ICollection<HistoryQuiz> HistoryQuizzes { get; set; }
     }
 }
