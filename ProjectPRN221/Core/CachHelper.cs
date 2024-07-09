@@ -32,5 +32,20 @@ namespace ProjectPRN221.Core
 
             return JsonSerializer.Deserialize<T>(jsonData);
         }
-    }
+
+		public static async Task RemoveRecordAsync(this IDistributedCache cache,
+												   string recordId,
+												   ILogger logger = null)
+		{
+			try
+			{
+				await cache.RemoveAsync(recordId);
+			}
+			catch (Exception ex)
+			{
+				logger?.LogError(ex, "Error removing cache record for {RecordId}", recordId);
+				throw;
+			}
+		}
+	}
 }
