@@ -5,7 +5,7 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+@* <h1>Details</h1>
 
 <div>
     <h4>Course</h4>
@@ -76,4 +76,109 @@
 <div>
     <a asp-page="./Edit" asp-route-id="@Model.Course?.Id">Edit</a> |
     <a asp-page="./Index">Back to List</a>
-</div>
+</div> *@
+<section class="pb-11 pt-7 bg-600">
+
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h6 class="font-sans-serif text-primary fw-bold">Course detail</h6>
+                <h1 class="mb-6">User Research for User<br />@Model.Course.Title</h1>
+            </div>
+        </div>
+    </div>
+</section>
+<section style="margin-top:-21.5rem">
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <img class="w-100" src=@Model.Course.Thumbnail alt="course" />
+                <h1 class="my-4">Description</h1>
+                <p>@Model.Course.Description</p>
+
+                <h1>What You’ll Learn?</h1>
+                <ul class="list-unstyled">
+                    @foreach (var explode in Model.Explode)
+                    {
+                        <li class="mb-3"> <i class="fas fa-check text-info me-2"></i><strong>@explode.Title </li>
+                    }
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>Enrolled </strong>: @Model.Enrolled Student</li>
+                        <li class="list-group-item"><strong>Duration </strong>: @Model.Duration explode</li>
+                        <li class="list-group-item"><strong>Categories </strong>: @Model.Course.Categories</li>
+                        <li class="list-group-item text-center">
+                            <img src="~/img/gallery/searching.png" width="78" alt="..." />
+                            <p class="text-muted mb-0 mt-4">Contact a customer support at</p><a class="text-info" href="mailto:@Model.Lecture.Email">@Model.Lecture.Email</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="pt-0">
+
+    <div class="container">
+        <div class="row h-100 align-items-center">
+            <div class="col-md-12 col-lg-6 h-100">
+                <div class="card card-span text-white h-100">
+                    <img class="w-100" src="~/img/gallery/student-feedback.png" alt="..." />
+                    <div class="card-body px-xl-5 px-md-3 pt-0">
+                        <div class="d-flex flex-column align-items-center bg-200" style="margin-top:-2.4rem;">
+                            <h5 class="mt-3 mb-0">Kimmie Vo</h5>
+                            <p class="text-muted">Junior Designer</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 col-lg-6 h-100">
+                <h1 class="my-4">Successful Student<br /><span class="text-primary">Feedback</span></h1>
+                <p>Take courses from the world’s best instructors and universities. Courses include recorded auto-graded and peer-reviewed assignments, video lectures, and community discussion forums. When you complete a course, you’ll be eligible to receive a shareable electronic Course Certificate for a small fee.</p>
+                <div class="mt-6">
+                    <h5 class="font-sans-serif fw-bold mb-3">The courses that Kimmie has taken</h5>
+                    <div class="card card-span bg-600">
+                        <div class="card-body">
+                            <div class="row flex-center gx-0">
+                                <div class="col-lg-4 col-xl-3 text-center text-xl-start"><img src="~/img/gallery/art-design.png" width="120" alt="courses" /></div>
+                                <div class="col-lg-8 col-xl-9">
+                                    <h5 class="font-sans-serif fw-bold">Modern and Contemporary Art and Design</h5>
+                                    <p class="text-muted fs--1">The Museum of Modern Art</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6 col-lg-4 mb-5"><img src="~/img/gallery/cta.png" width="280" alt="cta" /></div>
+            <div class="col-md-6 col-lg-5">
+                <h5 class="text-primary font-sans-serif fw-bold">Enroll now</h5>
+                <h1 class="mb-5">Get every single<br />update you will get</h1>
+                @if (User.Identity.IsAuthenticated && User.IsInRole("student"))
+                {
+                    <form method="post">
+                        <button type="submit" class="btn btn-primary">Enroll Now</button>
+                    </form>
+                }
+                else if (!User.Identity.IsAuthenticated)
+                {
+                    <a href="/Account/Login" class="btn btn-primary">Log in to Enroll</a>
+                }
+            </div>
+        </div>
+    </div>
+
+</section>
