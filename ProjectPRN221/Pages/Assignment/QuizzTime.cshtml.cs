@@ -15,7 +15,7 @@ namespace ProjectPRN221.Pages.Assignment
             Course course = DBContext.Courses.Include(p => p.Quizzes).FirstOrDefault(p => p.Id == CourseID);
             if (course == null)
             {
-                return RedirectToPage("Index");
+                return RedirectToPage("/Courses/Index");
             }
 
             if (IsViewing)

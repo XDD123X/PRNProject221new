@@ -232,7 +232,7 @@ INSERT INTO [dbo].[quizzes] (course_id, question, option_1, option_2, option_3, 
 
 GO
 
--- FUNCTION 
+-- CODING TIME
 CREATE TRIGGER OnEnrollment 
 ON [dbo].[enroled_courses]
 AFTER INSERT
@@ -243,3 +243,33 @@ BEGIN
 	FROM [dbo].[courses] 
 	JOIN inserted ON courses.id = inserted.course_id;
 END;
+
+GO
+
+CREATE PROC GetPoint
+@id_user bigint, @id_course bigint,
+@point float out
+AS
+BEGIN
+	DECLARE @total_question int
+	DECLARE @right_answer int
+	SELECT @total_question = COUNT(*) from history_quizzes hq 
+	LEFT JOIN quizzes q on hq.quizz_id = q.id
+	LEFT JOIN courses c on c.id = q.course_id
+	where c.id = @id_course and hq.user_id = @id_user
+	SELECT @right_answer = COUNT(*) from history_quizzes hq 
+	LEFT JOIN quizzes q on hq.quizz_id = q.id
+	LEFT JOIN courses c on c.id = q.course_id
+	where c.id = @id_course and hq.user_id = @id_user and q.answer = hq.answer
+    SET	@point = (@right_answer / @total_question) * 10.0;
+END
+
+GO
+
+CREATE PROC GetRevenues 
+@revenues float out
+AS 
+BEGIN
+	select @revenues = SUM() from enroled_courses ec
+
+END
