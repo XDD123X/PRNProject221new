@@ -38,6 +38,11 @@ namespace ProjectPRN221.Models
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
+                entity.Property(e => e.Categories)
+                    .HasMaxLength(255)
+                    .IsUnicode(false)
+                    .HasColumnName("categories");
+
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetime")
                     .HasColumnName("created_at");

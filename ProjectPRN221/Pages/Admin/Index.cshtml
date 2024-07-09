@@ -1,0 +1,110 @@
+﻿@page
+@model ProjectPRN221.Pages.Admin.IndexModel
+@using ProjectPRN221.Models;
+@{
+    Layout = "Layout.cshtml";
+}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    .header h2 {
+        text-align: center;
+    }
+
+    img {
+        -webkit-user-drag: none;
+        -moz-user-drag: none;
+        -ms-user-drag: none;
+        user-drag: none;
+    }
+
+    .content {
+        width: 400px;
+        background: white;
+        padding: 20px 20px;
+        margin: auto auto;
+        transition: margin-left 0.5s ease-out;
+    }
+
+        .content.active {
+            margin-left: 600px;
+        }
+
+    .card {
+        width: 300px;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin: 20px;
+    }
+
+    /* Style for the card title */
+    .card-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    /* Style for the card content */
+    .card-content {
+        font-size: 16px;
+    }
+</style>
+
+<div class="content">
+    <div class="header">
+        <h2>Statistic</h2>
+    </div>
+    <canvas id="userChart" width="400" height="200"></canvas>
+    <div class="attribute">
+        <div class="card">
+            <div class="card-title">Total Revenues</div>
+            <div class="card-content">@ViewData["TotalRevenues"]$</div>
+        </div>
+
+        <!-- Card for Total Users created in Month -->
+        <div class="card">
+            <div class="card-title">Total Users (This Month)</div>
+            <div class="card-content">@ViewData["TotalUsers"]</div>
+        </div>
+    </div>
+</div>
+<script>
+    function init() {
+        let Menulist = document.querySelectorAll(".Menulist li");
+        Menulist.forEach((item) => item.classList.remove("active"));
+        const liElement = document.querySelector(".Home");
+        liElement.classList.toggle("active");
+
+        var userData = {
+            labels: ["Free Users", "Premium Users"],
+            datasets: [
+                {
+                    data: [@ViewData["FreeUser"], @ViewData["PremiumUser"]],
+                    backgroundColor: ["rgba(75,192,192,0.2)", "rgba(255,99,132,0.2)"],
+                    borderColor: ["rgba(75,192,192,1)", "rgba(255,99,132,1)"],
+                    borderWidth: 1
+                }
+            ]
+        };
+
+        // Get the canvas element
+        var ctx = document.getElementById('userChart').getContext('2d');
+
+        // Create a doughnut chart
+        var userChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: userData,
+            options: {
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'User Upgrade Account Chart'
+                    }
+                }
+            }
+        });
+    }
+
+    window.onload = init;
+</script>
