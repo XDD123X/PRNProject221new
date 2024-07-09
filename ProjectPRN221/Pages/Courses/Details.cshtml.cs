@@ -11,12 +11,7 @@ namespace ProjectPRN221.Pages.Courses
 {
     public class DetailsModel : PageModel
     {
-        private readonly ProjectPRN221.Models.PROJECT_PRUContext _context;
-
-        public DetailsModel(ProjectPRN221.Models.PROJECT_PRUContext context)
-        {
-            _context = context;
-        }
+        private readonly ProjectPRN221.Models.PROJECT_PRUContext _context = new PROJECT_PRUContext();
 
       public Course Course { get; set; } = default!; 
 
@@ -27,7 +22,9 @@ namespace ProjectPRN221.Pages.Courses
                 return NotFound();
             }
 
-            var course = await _context.Courses.FirstOrDefaultAsync(m => m.Id == id);
+            var course = await _context.Courses
+                .Include(c => c.Explodes)
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (course == null)
             {
                 return NotFound();
