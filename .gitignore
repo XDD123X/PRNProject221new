@@ -396,3 +396,8 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+/.vs/ProjectEvaluation/projectprn221.metadata.v7.bin
+/.vs/ProjectEvaluation/projectprn221.projects.v7.bin
+/.vs/ProjectPRN221/DesignTimeBuild/.dtbcache.v2
+/.vs/ProjectPRN221/v17/.futdcache.v2
+/.vs/ProjectPRN221/v17/.suo
