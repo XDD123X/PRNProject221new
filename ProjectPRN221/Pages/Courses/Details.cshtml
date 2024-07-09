@@ -93,29 +93,27 @@
     <div class="container">
         <div class="row">
             <div class="col-md-8">
-                <img class="w-100" src="assets/img/gallery/ux-designer.png" alt="..." />
+                <img class="w-100" src=@Model.Course.Thumbnail alt="course" />
                 <h1 class="my-4">Description</h1>
                 <p>@Model.Course.Description</p>
-                
+
                 <h1>What You’ll Learn?</h1>
                 <ul class="list-unstyled">
-                    <li class="mb-3"> <i class="fas fa-check text-info me-2"></i><strong>Ivy League Quality</strong>&nbsp;A first-of-its-kind program that offers an Ivy League master’s degree in Computer Science designed for non-CS majors.</li>
-                    <li class="mb-3"> <i class="fas fa-check text-info me-2"></i><strong>Built Around Your Schedule The coursework</strong>&nbsp;is 100 percent online. You’ll benefit from the same high-quality instruction as on-campus students and graduate with the same degree. The diploma does not indicate whether the degree was earned online or on-campus.</li>
-                    <li class="mb-3"> <i class="fas fa-check text-info me-2"></i><strong>Accessible Pricing The cost of the MCIT Online degree</strong>&nbsp; is significantly less than on-campus alternatives and most online master’s degrees in Computer Science. Students pay $2,640 per course unit for a total of 10 courses units. Tuition and fees are posted as a guide and may be subject to change.</li>
-                    <li class="mb-3"> <i class="fas fa-check text-info me-2"></i><strong>Try before you apply Penn Engineering</strong>&nbsp; offers an online Specialization, Introduction to Programming with Python and Java, on Coursera to help you decide whether the MCIT Online program is the right fit before you apply. </li>
+                    @foreach (var explode in Model.Explode)
+                    {
+                        <li class="mb-3"> <i class="fas fa-check text-info me-2"></i><strong>@explode.Title </li>
+                    }
                 </ul>
             </div>
             <div class="col-md-4">
                 <div class="card">
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item"><strong>Enrolled </strong>: 1200 students</li>
-                        <li class="list-group-item"><strong>Duration </strong>: 2 hours</li>
-                        <li class="list-group-item"><strong>Lectures </strong>: 8</li>
-                        <li class="list-group-item"><strong>Categories </strong>: Technology</li>
-                        <li class="list-group-item"><strong>Level </strong>: Intermediate Level</li>
+                        <li class="list-group-item"><strong>Enrolled </strong>: @Model.Enrolled Student</li>
+                        <li class="list-group-item"><strong>Duration </strong>: @Model.Duration explode</li>
+                        <li class="list-group-item"><strong>Categories </strong>: @Model.Course.Categories</li>
                         <li class="list-group-item text-center">
-                            <img src="assets/img/gallery/searching.png" width="78" alt="..." />
-                            <p class="text-muted mb-0 mt-4">Contact a customer support at</p><a class="text-info" href="mailto:vctung@outlook.com">vctung@outlook.com</a>
+                            <img src="~/img/gallery/searching.png" width="78" alt="..." />
+                            <p class="text-muted mb-0 mt-4">Contact a customer support at</p><a class="text-info" href="mailto:@Model.Lecture.Email">@Model.Lecture.Email</a>
                         </li>
                     </ul>
                 </div>
@@ -130,7 +128,7 @@
         <div class="row h-100 align-items-center">
             <div class="col-md-12 col-lg-6 h-100">
                 <div class="card card-span text-white h-100">
-                    <img class="w-100" src="assets/img/gallery/student-feedback.png" alt="..." />
+                    <img class="w-100" src="~/img/gallery/student-feedback.png" alt="..." />
                     <div class="card-body px-xl-5 px-md-3 pt-0">
                         <div class="d-flex flex-column align-items-center bg-200" style="margin-top:-2.4rem;">
                             <h5 class="mt-3 mb-0">Kimmie Vo</h5>
@@ -147,7 +145,7 @@
                     <div class="card card-span bg-600">
                         <div class="card-body">
                             <div class="row flex-center gx-0">
-                                <div class="col-lg-4 col-xl-3 text-center text-xl-start"><img src="assets/img/gallery/art-design.png" width="120" alt="courses" /></div>
+                                <div class="col-lg-4 col-xl-3 text-center text-xl-start"><img src="~/img/gallery/art-design.png" width="120" alt="courses" /></div>
                                 <div class="col-lg-8 col-xl-9">
                                     <h5 class="font-sans-serif fw-bold">Modern and Contemporary Art and Design</h5>
                                     <p class="text-muted fs--1">The Museum of Modern Art</p>
@@ -165,20 +163,20 @@
 
     <div class="container">
         <div class="row align-items-center">
-            <div class="col-md-6 col-lg-4 mb-5"><img src="assets/img/gallery/cta.png" width="280" alt="cta" /></div>
+            <div class="col-md-6 col-lg-4 mb-5"><img src="~/img/gallery/cta.png" width="280" alt="cta" /></div>
             <div class="col-md-6 col-lg-5">
-                <h5 class="text-primary font-sans-serif fw-bold">Subscrible now</h5>
+                <h5 class="text-primary font-sans-serif fw-bold">Enroll now</h5>
                 <h1 class="mb-5">Get every single<br />update you will get</h1>
-                <form class="row g-0 align-items-center">
-                    <div class="col">
-                        <div class="input-group-icon">
-                            <input class="form-control form-little-squirrel-control" type="email" placeholder="Enter email " aria-label="email" /><i class="fas fa-envelope input-box-icon"></i>
-                        </div>
-                    </div>
-                    <div class="col-auto">
-                        <button class="btn btn-primary rounded-0" type="submit">Subscribe now</button>
-                    </div>
-                </form>
+                @if (User.Identity.IsAuthenticated && User.IsInRole("student"))
+                {
+                    <form method="post">
+                        <button type="submit" class="btn btn-primary">Enroll Now</button>
+                    </form>
+                }
+                else if (!User.Identity.IsAuthenticated)
+                {
+                    <a href="/Account/Login" class="btn btn-primary">Log in to Enroll</a>
+                }
             </div>
         </div>
     </div>
