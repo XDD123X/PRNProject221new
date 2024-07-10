@@ -270,6 +270,6 @@ CREATE PROC GetRevenues
 @revenues float out
 AS 
 BEGIN
-	select @revenues = SUM() from enroled_courses ec
-
+	select @revenues = SUM(c.price) from enroled_courses ec
+	join courses c on c.id = ec.course_id
 END
