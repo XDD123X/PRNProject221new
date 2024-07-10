@@ -14,12 +14,21 @@ namespace ProjectPRN221.Pages.Courses
         private readonly ProjectPRN221.Models.PROJECT_PRUContext _context = new PROJECT_PRUContext();
         public Course Course { get; set; } = default!;
         public User Lecture { get; set; } = default!;
+        public User currUser { get; set; } = default!;
         public IList<Explode> Explode { get; set; } = default!;
-        public int Enrolled { get; set; } = default!;
-        public int Duration { get; set; } = default!;
+        public long Enrolled { get; set; } = default!;
+        public long Duration { get; set; } = default!;
+
+        public bool isEndrolled { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(long? id)
         {
+            //lay user hien tai
+            currUser = new User()
+            {
+                Id = 3,
+                Role = "Student",
+            };
             if (id == null || _context.Courses == null)
             {
                 return NotFound();
@@ -29,7 +38,14 @@ namespace ProjectPRN221.Pages.Courses
                 .Include(c => c.Explodes)
                 .FirstOrDefaultAsync(m => m.Id == id);
             Enrolled = await _context.EnroledCourses.Where(e => e.CourseId == id).CountAsync();
-
+            if (_context.EnroledCourses.FirstOrDefault(ec => ec.CourseId == id && ec.UserId == currUser.Id) == null)
+            {
+                isEndrolled = false;
+            }
+            else
+            {
+                isEndrolled = true;
+            }
             var explode = await _context.Explodes.Where(e => e.CourseId == id).ToListAsync();
 
             Duration = await _context.Explodes.Where(e => e.CourseId != id).CountAsync();
@@ -50,34 +66,65 @@ namespace ProjectPRN221.Pages.Courses
 
         public async Task<IActionResult> OnPostAsync(long? id)
         {
+            return RedirectToPage("./Index");
+        }
+        public async Task<IActionResult> OnPostDeleteAsync(long? id)
+        {
+            currUser = new User()
+            {
+                Id = 1,
+                Role = "Lecture",
+            };
+            if (currUser == null)
+            {
+                //return trang dang nhap
+                return RedirectToPage("/Account/Login");
+            }
+
             if (id == null || _context.Courses == null)
             {
                 return NotFound();
             }
 
-            if (User.Identity.IsAuthenticated && User.IsInRole("student"))
-            {
-                var userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
-                if (userId != null)
-                {
-                    var enrollment = new EnroledCourse
-                    {
-                        CourseId = (long)id,
-                        UserId = long.Parse(userId),
-                        CreatedAt = DateTime.Now
-                    };
+            var course = await _context.Courses.FindAsync(id);
 
-                    _context.EnroledCourses.Add(enrollment);
+            if (course != null)
+            {
+                if (currUser.Role.Equals("Lecture") && currUser.Id == course.UserId)
+                {
+                    _context.Courses.Remove(course);
                     await _context.SaveChangesAsync();
                 }
             }
-            else if (!User.Identity.IsAuthenticated)
+
+            return RedirectToPage("./Index");
+        }
+        public async Task<IActionResult> OnPostEnrollAsync(long? uid, long? cid)
+        {
+            if (uid == null || cid == null)
             {
-                //trang dang nhap la gì day v:
+                return NotFound();
+            }
+            currUser = _context.Users.FirstOrDefault(u => u.Id == uid);
+            if (currUser == null)
+            {
+                //return trang dang nhap
                 return RedirectToPage("/Account/Login");
             }
+            if (currUser.Role.Equals("Student"))
+            {
+                var enrollment = new EnroledCourse
+                {
+                    CourseId = cid,
+                    UserId = uid,
+                    CreatedAt = DateTime.Now
+                };
 
-            return RedirectToPage(new { id = id });
+                _context.EnroledCourses.Add(enrollment);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToPage(new { id = cid });
         }
     }
 }

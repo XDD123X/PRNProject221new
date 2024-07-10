@@ -59,6 +59,7 @@ CREATE TABLE courses (
 	course_id bigint FOREIGN KEY REFERENCES courses(id),
 	content varchar(255),
 	title varchar(255),
+	video varchar(255),
 	is_deleted bit
 	)
 
@@ -85,6 +86,13 @@ CREATE TABLE courses (
 -- Users
 INSERT INTO [dbo].[users] (email, password, role, username) VALUES ('admin@gmail.com', '123456', 'ADMIN', 'KCS');
 
+INSERT INTO users (email, password, role, username, is_deleted)
+VALUES 
+('user1@example.com', 'password1', 'Student', 'user1', 0),
+('user2@example.com', 'password2', 'Student', 'user2', 0),
+('lecturer1@example.com', 'password', 'Lecturer', 'lecturer1', 0);
+
+
 -- Courses
 INSERT INTO [dbo].[courses] (user_id, title, thumbnail, categories, description, price, created_at, is_actived, enrol_nums) VALUES 
 (1, 'Introduction to HTML and CSS', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTkfaWZXo9v8ltwKPSXKwKcTXYWCcV49Pt7pw&s','htlm and css','Learn the basics of HTML and CSS to create and style web pages.', 150.00, GETDATE(), 1, 0),
@@ -97,6 +105,27 @@ INSERT INTO [dbo].[courses] (user_id, title, thumbnail, categories, description,
 (1, 'DevOps Essentials', 'https://images.ctfassets.net/wfutmusr1t3h/4ez2WNMQR71INMMV61qY45/c051e8c0717eea08136f110dc32c82e6/The_eight_stages_of_a_successful_DevOps_workflow.png', 'DevOps', 'Learn the key concepts of DevOps and how to implement them in your organization.', 500.00, GETDATE(), 1, 0),
 (1, 'Mobile App Development with Flutter', 'https://cdn.prod.website-files.com/5f841209f4e71b2d70034471/6078b650748b8558d46ffb7f_Flutter%20app%20development.png', 'flutter framework', 'Create cross-platform mobile applications using the Flutter framework.', 550.00, GETDATE(), 1, 0),
 (1, 'Machine Learning with Python', 'https://pyimagesearch.com/wp-content/uploads/2019/01/python_ml_header.png', 'python', 'Dive into machine learning concepts and techniques using Python.', 600.00, GETDATE(), 1, 0);
+
+INSERT INTO courses (user_id, title, thumbnail, categories, description, price, created_at, updated_at, is_actived, enrol_nums, is_deleted)
+VALUES
+(4, 'User Research for User', 'thumbnail_url_1.jpg', 'Research', 'Learn about user research techniques.', 29.99, GETDATE(), GETDATE(), 1, 50, 0),
+(4, 'Web Development Fundamentals', 'thumbnail_url_2.jpg', 'Web Development', 'Introductory course on web development.', 19.99, GETDATE(), GETDATE(), 1, 80, 0),
+(4, 'Data Analysis with Python', 'thumbnail_url_3.jpg', 'Data Science', 'Learn data analysis using Python.', 39.99, GETDATE(), GETDATE(), 1, 60, 0);
+
+-- enroll course
+INSERT INTO enroled_courses (user_id, course_id, created_at, updated_at, is_deleted)
+VALUES
+(2, 1, GETDATE(), GETDATE(), 0),
+(3, 2, GETDATE(), GETDATE(), 0),
+(2, 3, GETDATE(), GETDATE(), 0);
+
+--explode
+INSERT INTO explodes (course_id, content, title, video, is_deleted)
+VALUES
+(1, 'Introduction to User Research', 'Intro Video', 'video_url_1.mp4', 0),
+(1, 'User Persona Creation', 'Persona', 'video_url_2.mp4', 0),
+(2, 'Setting Up Your Development Environment', 'Setup', 'video_url_3.mp4', 0),
+(3, 'Python Basics', 'Python Intro', 'video_url_4.mp4', 0);
 
 -- Quizzes for each course
 
@@ -230,6 +259,12 @@ INSERT INTO [dbo].[quizzes] (course_id, question, option_1, option_2, option_3, 
 (10, 'What is a confusion matrix?', 'A table that describes the performance of a classification model', 'A table that contains the input data', 'A matrix used for data normalization', 'A method for data visualization', 1),
 (10, 'Which of the following is a common activation function in neural networks?', 'Sigmoid', 'Linear', 'Polynomial', 'Radial', 1);
 
+-- history of quiz attempts
+INSERT INTO history_quizzes (user_id, quizz_id, answer, is_deleted)
+VALUES
+(1, 1, 1, 0),
+(2, 2, 1, 0),
+(1, 3, 1, 0);
 GO
 
 -- CODING TIME
@@ -273,3 +308,5 @@ BEGIN
 	select @revenues = SUM() from enroled_courses ec
 
 END
+
+select * from enroled_courses
