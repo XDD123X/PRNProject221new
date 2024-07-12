@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using MimeKit.Cryptography;
 using ProjectPRN221.Models;
+using System.Data;
 
 namespace ProjectPRN221.Pages.Admin
 {
@@ -12,7 +15,7 @@ namespace ProjectPRN221.Pages.Admin
         private readonly IDistributedCache _cache;
         public IndexModel(IDistributedCache cache)
         {
-            _cache = cache; 
+            _cache = cache;
         }
         public async Task<IActionResult> OnGet()
         {
@@ -23,10 +26,29 @@ namespace ProjectPRN221.Pages.Admin
             }
             else
             {
-
-                //ViewData["TotalRevenues"] = dbcontext.EnroledCourses.Where(p => p.UpdatedAt.GetValueOrDefault().Month == DateTime.Now.Month);
+                ViewData["TotalRevenues"] = await GetRevenuesAsync();
+                ViewData["TotalUsers"] = dbcontext.Users.Where(p => p.Role.ToUpper() != "ADMIN").Count();
                 return Page();
             }
+        }
+
+        public async Task<float> GetRevenuesAsync()
+        {
+            // Define the output parameter
+            var revenuesParam = new SqlParameter
+            {
+                ParameterName = "@revenues",
+                SqlDbType = SqlDbType.Float,
+                Direction = ParameterDirection.Output
+            };
+
+            var sql = "EXEC GetRevenues @revenues OUT";
+
+            await dbcontext.Database.ExecuteSqlRawAsync(sql, revenuesParam);
+
+            float revenues = revenuesParam.Value != DBNull.Value ? (float)(double)revenuesParam.Value : 0;
+
+            return revenues;
         }
     }
 }

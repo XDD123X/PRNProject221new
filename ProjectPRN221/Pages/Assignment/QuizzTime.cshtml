@@ -6,9 +6,11 @@
     int questionNumber = 0;
     Boolean isViewing = (Boolean)ViewData["isViewing"];
     List<HistoryQuiz> history = new List<HistoryQuiz>();
+    float point = 0;
     if (isViewing)
     {
         history = ViewData["history"] as List<HistoryQuiz>;
+        point = (float)ViewData["point"];
     }
 }
 <style>
@@ -79,6 +81,7 @@
             </div>
         } else
         {
+            <div> <p>Total point: @point.ToString("0.00f") </p> </div>
             foreach (HistoryQuiz hq in history)
             {
                 questionNumber++;
@@ -126,48 +129,4 @@
 
         form.submit();
     }
-    // let totalQuestions = @thisCourse.Quizzes.Count;
-
-    // function answer() {
-    //     let Answers = getAnswers(totalQuestions);
-
-    //     fetch('/Quiz/Lists/Answer', {
-    //         method: 'POST',
-    //         headers: {
-    //             'Content-Type': 'application/json'
-    //         },
-    //         body: JSON.stringify(Answers)
-    //     })
-    //         .then(response => response.json())
-    //         .then(data => {
-    //             console.log('Success:', data);
-    //         })
-    //         .catch((error) => {
-    //             console.error('Error:', error);
-    //         });
-    // }
-
-    // function getAnswers(totalQuestions) {
-    //     let answers = [];
-    //     for (let i = 1; i <= totalQuestions; i++) {
-    //         let questionDiv = document.querySelector(`.Question-${i}`);
-    //         if (questionDiv) {
-    //             let selectedOption = questionDiv.querySelector(`input[name="Answers[${i}].SelectedOption"]:checked`);
-    //             if (selectedOption) {
-    //                 answers.push({
-    //                     SelectedOption: selectedOption.value,
-    //                     QuestionNumber: i
-    //                 });
-    //             } else {
-    //                 answers.push({
-    //                     SelectionOption: -1,
-    //                     QuestionNumber: i
-    //                 });
-    //             }
-    //         }
-    //     }
-    //     return answers;
-    // }
-
-
 </script>
