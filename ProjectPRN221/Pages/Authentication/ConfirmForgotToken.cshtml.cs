@@ -6,10 +6,10 @@ using ProjectPRN221.Models;
 
 namespace ProjectPRN221.Pages.Authentication
 {
-    public class ActiveAccountModel : PageModel
+    public class ConfirmForgotTokenModel : PageModel
     {
 		private IDistributedCache _cache;
-		public ActiveAccountModel(IDistributedCache cache)
+		public ConfirmForgotTokenModel(IDistributedCache cache)
 		{
 			_cache = cache;
 		}
@@ -23,9 +23,11 @@ namespace ProjectPRN221.Pages.Authentication
         {
         }
 
+
 		public async Task<IActionResult> OnPost()
 		{
-			if (!validateEmail()) {
+			if (!validateEmail())
+			{
 				ViewData["notify"] = "Email is not in used";
 				return Page();
 			}
@@ -36,28 +38,28 @@ namespace ProjectPRN221.Pages.Authentication
 
 		private async Task<String> validateToken()
 		{
-			string activeToken = await _cache.GetRecordAsync<string>("Register" + "_" + txtEmail);
+			string activeToken = await _cache.GetRecordAsync<string>("Forgot_Password" + "_" + txtEmail);
 			if (activeToken != null)
 			{
 				Console.WriteLine("Check token in cache");
 				if (txtToken != null && txtToken.Equals(activeToken))
 				{
 					Console.WriteLine("Same token");
-					activateAccount();
-					return "Active account successful";
-				} 
+					sendPassword();
+					return "New Password was send to your email";
+				}
 				else
 				{
 					return "Wrong token";
 				}
-			} 
+			}
 			else
 			{
 				Console.WriteLine("Check token in database");
 				using (PROJECT_PRUContext _context = new PROJECT_PRUContext())
 				{
 					var token = _context.Tokens
-						.Where(t => t.Email == txtEmail && t.IsDeleted == false && t.Type == "ACTIVE_ACCOUNT")
+						.Where(t => t.Email == txtEmail && t.IsDeleted == false && t.Type == "FORGOT_PASSWORD")
 						.OrderBy(t => t.Id)
 						.ToList();
 					if (token != null && token.Any())
@@ -66,15 +68,17 @@ namespace ProjectPRN221.Pages.Authentication
 						Console.WriteLine("Email has token " + activeAccount.Content);
 						if (activeAccount?.Content == txtToken)
 						{
-							if(activeAccount.ExpiredDate >= DateTime.Now)
+							if (activeAccount.ExpiredDate >= DateTime.Now)
 							{
-								activateAccount();
+								sendPassword();
 								return "Active account successful";
-							} else
+							}
+							else
 							{
 								return "Expired Token";
 							}
-						} else
+						}
+						else
 						{
 							return "Wrong Token";
 						}
@@ -87,15 +91,19 @@ namespace ProjectPRN221.Pages.Authentication
 			}
 		}
 
-		private void activateAccount()
+		private void sendPassword()
 		{
 			using (PROJECT_PRUContext _context = new PROJECT_PRUContext())
 			{
-				var student = _context.Users.Where(t => t.Email == txtEmail && t.IsDeleted == true).ToList();
-				if (student != null)
+				var student = _context.Users.Where(t => t.Email == txtEmail && t.IsDeleted == false).ToList();
+				if (student != null && student.Any())
 				{
+					string password = Guid.NewGuid().ToString();
 					User user = (User)student.FirstOrDefault();
-					user.IsDeleted = true;
+					string hashPassword = BCrypt.Net.BCrypt.HashPassword(password);
+					Console.WriteLine("Hashpassword from *" + password + "* to *" + hashPassword + "*");
+					user.Password = hashPassword;
+					EmailService.Send(txtEmail, "Your new password in PROJECT PRN:", "Your password is set to: " + password);
 					_context.Update(user);
 					_context.SaveChanges();
 				}
@@ -106,7 +114,7 @@ namespace ProjectPRN221.Pages.Authentication
 		{
 			using (PROJECT_PRUContext _context = new PROJECT_PRUContext())
 			{
-				var student = _context.Users.Where(t => t.Email.Equals(txtEmail) && t.IsDeleted == true).ToList();
+				var student = _context.Users.Where(t => t.Email.Equals(txtEmail) && t.IsDeleted == false).ToList();
 				if (student == null || student.Count() == 0)
 				{
 					return false;
@@ -114,5 +122,5 @@ namespace ProjectPRN221.Pages.Authentication
 			}
 			return true;
 		}
-    }
+	}
 }

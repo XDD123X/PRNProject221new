@@ -15,7 +15,15 @@ namespace ProjectPRN221
                 options.Configuration = builder.Configuration.GetConnectionString("Redis");
                 options.InstanceName = "ProjectPRN221";
             });
-            var app = builder.Build();
+
+			builder.Services.AddDistributedMemoryCache(); // For in-memory caching
+			builder.Services.AddSession(options =>
+			{
+				options.IdleTimeout = TimeSpan.FromMinutes(30); // Session timeout
+				options.Cookie.HttpOnly = true; // Make the session cookie HTTP-only
+				options.Cookie.IsEssential = true; // Essential for session state to work
+			});
+			var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
@@ -29,7 +37,7 @@ namespace ProjectPRN221
 			app.UseStaticFiles();
 
 			app.UseRouting();
-
+			app.UseSession();
 			app.UseAuthorization();
 
 			app.MapRazorPages();

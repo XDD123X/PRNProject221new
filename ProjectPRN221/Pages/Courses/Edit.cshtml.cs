@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -12,57 +13,102 @@ namespace ProjectPRN221.Pages.Courses
 {
     public class EditModel : PageModel
     {
-        private readonly ProjectPRN221.Models.PROJECT_PRUContext _context;
-
-        public EditModel(ProjectPRN221.Models.PROJECT_PRUContext context)
-        {
-            _context = context;
-        }
+        private readonly ProjectPRN221.Models.PROJECT_PRUContext _context = new PROJECT_PRUContext();
 
         [BindProperty]
-        public Course Course { get; set; } = default!;
+        public Course Course { get; set; }
+        public User currUser { get; set; } = default!;
+
 
         public async Task<IActionResult> OnGetAsync(long? id)
         {
+            currUser = new User()
+            {
+                Id = 1,
+                Role = "Lecture",
+            };
+            if (currUser == null)
+            {
+                //return trang dang nhap
+                return RedirectToPage("/Account/Login");
+            }
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            Course = await _context.Courses
+                .Include(c => c.Explodes)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (Course == null)
+            {
+                return NotFound();
+            }
+
+            return Page();
+        }
+
+        public async Task<IActionResult> OnPostAsync(long? id)
+        {
+            currUser = new User()
+            {
+                Id = 1,
+                Role = "Lecture",
+            };
+            if (currUser == null)
+            {
+                //return trang dang nhap
+                return RedirectToPage("/Account/Login");
+            }
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
+            var course = await _context.Courses.FindAsync(id);
+            if (course != null)
+            {
+                if (currUser.Role.Equals("Lecture") && currUser.Id == course.UserId)
+                {
+                    course.Title = Course.Title;
+                    course.Thumbnail = Course.Thumbnail;
+                    course.Description = Course.Description;
+
+                    _context.Update(course);
+                    await _context.SaveChangesAsync();
+
+
+                }
+            }
+            return Page();
+        }
+
+        public async Task<IActionResult> OnPostDeleteAsync(long? id)
+        {
+            currUser = new User()
+            {
+                Id = 1,
+                Role = "Lecture",
+            };
+            if (currUser == null)
+            {
+                //return trang dang nhap
+                return RedirectToPage("/Account/Login");
+            }
+
             if (id == null || _context.Courses == null)
             {
                 return NotFound();
             }
 
-            var course =  await _context.Courses.FirstOrDefaultAsync(m => m.Id == id);
-            if (course == null)
-            {
-                return NotFound();
-            }
-            Course = course;
-           ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
-            return Page();
-        }
+            var course = await _context.Courses.FindAsync(id);
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync()
-        {
-            if (!ModelState.IsValid)
+            if (course != null)
             {
-                return Page();
-            }
-
-            _context.Attach(Course).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CourseExists(Course.Id))
+                if (currUser.Role.Equals("Lecture") && currUser.Id == course.UserId)
                 {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
+                    _context.Courses.Remove(course);
+                    await _context.SaveChangesAsync();
                 }
             }
 
@@ -71,7 +117,7 @@ namespace ProjectPRN221.Pages.Courses
 
         private bool CourseExists(long id)
         {
-          return (_context.Courses?.Any(e => e.Id == id)).GetValueOrDefault();
+            return _context.Courses.Any(e => e.Id == id);
         }
     }
 }

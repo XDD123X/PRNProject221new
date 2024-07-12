@@ -4,97 +4,15 @@
 @{
     ViewData["Title"] = "Index";
 }
-
-@* <h1>Index</h1>
-
-<p>
-    <a asp-page="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Course[0].Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Course[0].Thumbnail)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Course[0].Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Course[0].Price)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Course[0].CreatedAt)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Course[0].UpdatedAt)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Course[0].IsActived)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Course[0].EnrolNums)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Course[0].IsDeleted)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Course[0].User)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model.Course) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Thumbnail)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Price)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedAt)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UpdatedAt)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsActived)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EnrolNums)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsDeleted)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.User.Id)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table> *@
-
 <section class="bg-600">
     <div class="container">
         <div class="row">
             <div class="col-12">
-                <h6 class="font-sans-serif text-primary fw-bold">Course category</h6>
-                <h1 class="mb-6">@Model.Category</h1>
+                @if (Model.Category != null && Model.Category != "")
+                {
+                    <h6 class="font-sans-serif text-primary fw-bold">Course category</h6>
+                    <h1 class="mb-6">@Model.Category</h1>
+                }
                 <form method="get" class="row g-3">
                     <div class="col-sm-6 col-md-3">
                         <label class="form-label" for="inputTitle">Title</label>
@@ -104,10 +22,10 @@
                         <label class="form-label" for="inputCategories">Categories</label>
                         <select class="form-select" id="inputCategories" name="Category">
                             <option selected="selected" value="">All</option>
-                            @foreach(var category in Model.Categories)
+                            @foreach (var category in Model.Categories)
                             {
                                 <option value="@category">@category</option>
-                            }                            
+                            }
                         </select>
                     </div>
                     <div class="col-sm-6 col-md-3">
@@ -166,29 +84,6 @@
     </div>
 </section>
 
-<section>
-
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-md-6 col-lg-4 mb-5"><img src="~/img/gallery/cta.png" width="280" alt="cta" /></div>
-            <div class="col-md-6 col-lg-5">
-                <h5 class="text-primary font-sans-serif fw-bold">Subscrible now</h5>
-                <h1 class="mb-5">Get every single<br />update you will get</h1>
-                <form class="row g-0 align-items-center">
-                    <div class="col">
-                        <div class="input-group-icon">
-                            <input class="form-control form-little-squirrel-control" type="email" placeholder="Enter email " aria-label="email" /><i class="fas fa-envelope input-box-icon"></i>
-                        </div>
-                    </div>
-                    <div class="col-auto">
-                        <button class="btn btn-primary rounded-0" type="submit">Subscribe now</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-</section>
 <script src="~/js/popper.min.js"></script>
 <script src="~/js/bootstrap/bootstrap.min.js"></script>
 <script src="~/js/is/is.min.js"></script>
