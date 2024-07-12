@@ -44,8 +44,8 @@ namespace ProjectPRN221.Pages.Authentication
 					return Page();
 				}
 
-				HttpContext.Session.SetString("Session_"+ student.Id, "session");
-				var sessionValue = HttpContext.Session.GetString("Session_" + student.Id);
+				HttpContext.Session.SetString("Session_User", student.Id+"");
+				var sessionValue = HttpContext.Session.GetString("Session_User");
 				Console.WriteLine(sessionValue);
 			}
 
