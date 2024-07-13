@@ -1,5 +1,5 @@
 ﻿@page "{handler?}"
-@model ProjectPRN221.Pages.Admin.CoursesModel
+@model ProjectPRN221.Pages.Admin.EditExplodeModel
 @using ProjectPRN221.Models
 @{
     Layout = "Layout.cshtml";
@@ -7,6 +7,8 @@
 @{
     int getMaximumPagination = (int)ViewData["MaxPage"];
     int recordPerPage = (int)ViewData["recordPerPage"];
+    string courseTitle = (string)ViewData["courseName"];
+    int courseId = (int)ViewData["courseId"];
 }
 <style>
     .table-container {
@@ -112,9 +114,6 @@
         position: fixed;
     }
 
-    .CourseIcon {
-        max-width: 256px !important;
-    }
     .IsDeleted {
         background-color: gray !important;
     }
@@ -123,7 +122,7 @@
 <div class="content">
     @Html.AntiForgeryToken()
     <div class="header">
-        <h2>Courses table</h2>
+        <h2>@courseTitle's explodes table</h2>
     </div>
     <div class="table-container">
         <table class="styled-table">
@@ -133,15 +132,17 @@
                         ID
                     </th>
                     <th>
-                        Creator
+                        Course title
                     </th>
                     <th>
-                        Title
+                        Explode title
                     </th>
                     <th>
-                        Thumbnail
+                        Content
                     </th>
-
+                    <th>
+                        Video Id
+                    </th>
                     <th class="action">Action</th>
 
                 </tr>
@@ -183,11 +184,11 @@
 </div>
 
 <!-- Modal -->
-<div class="modal fade" id="courseModal" tabindex="-1" aria-labelledby="courseModalLabel" aria-hidden="true">
+<div class="modal fade" id="explodeModal" tabindex="-1" aria-labelledby="explodeModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="courseModalLabel">Course Details</h5>
+                <h5 class="modal-title" id="explodeModalLabel">Explode Details</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -195,60 +196,32 @@
             <div class="modal-body">
                 <form>
                     <div class="form-group">
-                        <label for="courseId">Id</label>
-                        <input type="text" class="form-control" id="courseId" readonly>
+                        <label for="explodeId">Id</label>
+                        <input type="text" class="form-control" id="explodeId" readonly>
                     </div>
                     <div class="form-group">
-                        <label for="courseUserId">Creator</label>
-                        <input type="text" class="form-control" id="courseUserId" readonly>
+                        <label for="explodeCourseTitle">Course title</label>
+                        <input type="text" class="form-control" id="explodeCourseTitle" readonly>
                     </div>
                     <div class="form-group">
-                        <label for="courseEnrolNums">Total learner</label>
-                        <input type="text" class="form-control" id="courseEnrolNums" readonly>
+                        <label for="explodeTitle">Explode title</label>
+                        <input type="text" class="form-control" id="explodeTitle">
                     </div>
                     <div class="form-group">
-                        <label for="courseTitle">Title</label>
-                        <input type="text" class="form-control" id="courseTitle">
+                        <label for="explodeContent">Content</label>
+                        <input type="text" class="form-control" id="explodeContent">
                     </div>
                     <div class="form-group">
-                        <label for="courseThumbnail">Thumbnail</label>
-                        <input type="text" class="form-control" id="courseThumbnail">
-                    </div>
-                    <div class="form-group">
-                        <label for="courseCategories">Categories</label>
-                        <input type="text" class="form-control" id="courseCategories">
-                    </div>
-                    <div class="form-group">
-                        <label for="courseDescription">Description</label>
-                        <textarea class="form-control" id="courseDescription" rows="3"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="coursePrice">Price</label>
-                        <input type="number" class="form-control" id="coursePrice" step="0.01">
-                    </div>
-                    <div class="form-group">
-                        <label for="courseCreatedAt">Created date</label>
-                        <input type="date" class="form-control" id="courseCreatedAt">
-                    </div>
-                    <div class="form-group">
-                        <label for="courseUpdatedAt">Updated date</label>
-                        <input type="date" class="form-control" id="courseUpdatedAt">
+                        <label for="explodeVideoId">Video ID</label>
+                        <input type="text" class="form-control" id="explodeVideoId">
                     </div>
                     <div class="form-group d-flex align-items-center" style="justify-content: space-evenly;">
                         <div class="form-group">
-                            <label for="courseIsActived">Is actived</label>
-                            <input type="checkbox" class="form-check-input" id="courseIsActived">
-                        </div>
-                        <div class="form-group">
-                            <label for="courseIsDeleted">Is deleted</label>
-                            <input type="checkbox" class="form-check-input" id="courseIsDeleted">
+                            <label for="explodeIsDeleted">Is deleted</label>
+                            <input type="checkbox" class="form-check-input" id="explodeIsDeleted">
                         </div>
                     </div>
                 </form>
-                <div class="form-group d-flex align-items-center" style="justify-content: space-evenly;">
-                    <img id="editQuizzIcon" title="Edit Quizz" alt="Edit Quizz" width="64" height="64" src="https://www.svgrepo.com/show/155531/test.svg" />
-                    <img id="editExplodeIcon" title="Edit Explode" alt="Edit Explode" width="64" height="64" src="https://www.svgrepo.com/show/324454/copybook-lesson-task-homework.svg" />
-                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -261,7 +234,7 @@
 <script>
     let pageNumber = 1;
     const maximumPaginationPage = @getMaximumPagination;
-    let listOfCourse;
+    let listOfExplode;
 
     document.addEventListener("DOMContentLoaded", function () {
 
@@ -313,7 +286,7 @@
     }
     function loadPage() {
         $.ajax({
-            url: `Courses/Page?index=${pageNumber}`,
+            url: `EditExplode/Page?index=${pageNumber}&courseId=@courseId`,
             type: 'GET',
             success: function (data) {
 
@@ -321,24 +294,24 @@
                 tableBody.empty();
                 let count = 0;
 
-                listOfCourse = data;
+                listOfExplode = data;
 
-                for (const course of data) {
+                for (const explode of data) {
                     count++;
 
                     let row = $('<tr>');
-
-                    if (course.isDeleted) {
+                    if (explode.isDeleted) {
                         row = $('<tr class="IsDeleted">');
                     }
-                    row.append('<td>' + course["id"] + '</td>');
-                    row.append('<td>' + course["creator"] + '</td>');
-                    row.append('<td>' + course["title"] + '</td>');
-                    row.append('<img class="CourseIcon" src="' + course["thumbnail"] + '"></img>');
+                    row.append('<td>' + explode["id"] + '</td>');
+                    row.append('<td>' + explode["courseName"] + '</td>');
+                    row.append('<td>' + explode["title"] + '</td>');
+                    row.append('<td>' + explode["content"] + '</td>');
+                    row.append('<td>' + explode["video"] + '</td>');
 
                     const actionCell = $('<td>');
                     actionCell.addClass('action');
-                    actionCell.append('<img src="https://www.svgrepo.com/show/522527/edit-3.svg" title="Edit this course" width=30 height=30 alt="Edit this course" onclick=Edit("' + course["id"] + '")></img>')
+                    actionCell.append('<img src="https://www.svgrepo.com/show/522527/edit-3.svg" title="Edit this explode" width=30 height=30 alt="Edit this explode" onclick=Edit("' + explode["id"] + '")></img>')
 
                     row.append(actionCell);
                     tableBody.append(row);
@@ -346,6 +319,7 @@
                 for (let i = 1; i <= (@recordPerPage - count); i++) {
 
                     const newRow = $('<tr>');
+                    newRow.append('<td>\u00A0</td>');
                     newRow.append('<td>\u00A0</td>');
                     newRow.append('<td>\u00A0</td>');
                     newRow.append('<td>\u00A0</td>');
@@ -362,38 +336,33 @@
     }
 
     function TryEdit() {
-        const khoaHoc = {
-            id: document.getElementById('courseId').value,
-            title: document.getElementById('courseTitle').value,
-            thumbnail: document.getElementById('courseThumbnail').value,
-            categories: document.getElementById('courseCategories').value,
-            description: document.getElementById('courseDescription').value,
-            price: parseFloat(document.getElementById('coursePrice').value),
-            createdAt: document.getElementById('courseCreatedAt').value,
-            updatedAt: document.getElementById('courseUpdatedAt').value,
-            isActived: document.getElementById('courseIsActived').checked,
-            isDeleted: document.getElementById('courseIsDeleted').checked
+        const tietHoc = {
+            id: document.getElementById('explodeId').value,
+            title: document.getElementById('explodeTitle').value,
+            content: document.getElementById('explodeContent').value,
+            video: documentgetElementById('explodeVideoId').value,
+            isDeleted: document.getElementById('explodeIsDeleted').checked
         };
 
         $.ajax({
-            url: 'Courses/Edit',
+            url: 'EditExplode/Edit',
             type: 'POST',
             beforeSend: function (xhr) {
                 xhr.setRequestHeader("XSRF-TOKEN",
                     $('input:hidden[name="__RequestVerificationToken"]').val());
             },
             data: {
-                course: khoaHoc
+                explode: tietHoc
             },
             success: function (response) {
-                showToast("Thông báo", "Cập nhật khóa học thành công", "bi bi-check-square", "success");
+                showToast("Thông báo", "Cập nhật tiết học thành công", "bi bi-check-square", "success");
                 loadPage();
             }, error: function (error) {
                 showToast("Cập nhập không thành công", error, "bi bi-exclamation-triangle", "danger");
             }
         });
 
-        $('#courseModal').modal('hide');
+        $('#explodeModal').modal('hide');
     }
 
     function formatDateForInput(dateStr) {
@@ -405,41 +374,18 @@
     }
 
 
-    function Edit(courseId) {
+    function Edit(explodeId) {
+        const explode = listOfExplode.find(c => c.id == explodeId);
+        if (explode) {
+            $('#explodeId').val(explode.id);
+            $('#explodeCourseTitle').val(explode.courseName);
+            $('#explodeTitle').val(explode.title);
+            $('#explodeContent').val(explode.content);
+            $('#explodeVideoId').val(explode.video);
+            $('#courseIsDeleted').prop('checked', explode.isDeleted);
 
-        const course = listOfCourse.find(c => c.id == courseId);
-        if (course) {
-            $('#courseId').val(course.id);
-            $('#courseUserId').val(course.creator);
-            $('#courseTitle').val(course.title);
-            $('#courseThumbnail').val(course.thumbnail);
-            $('#courseCategories').val(course.category);
-            $('#courseDescription').val(course.description);
-            $('#coursePrice').val(course.price);
-            $('#courseCreatedAt').val(formatDateForInput(course.createdDate));
-            $('#courseUpdatedAt').val(formatDateForInput(course.updateDate));
-            $('#courseIsActived').prop('checked', course.isActive);
-            $('#courseEnrolNums').val(course.totalLearner);
-            $('#courseIsDeleted').prop('checked', course.isDeleted);
-
-            $('#editQuizzIcon').off('click').on('click', function () {
-                Quizz(course.id);
-            });
-
-            $('#editExplodeIcon').off('click').on('click', function () {
-                Explode(course.id);
-            });
-
-            $('#courseModal').modal('show');
+            $('#explodeModal').modal('show');
         }
-    }
-
-    function Quizz(courseId) {
-        window.location.href = 'EditQuizz?CourseId=' + courseId;
-    }
-
-    function Explode(courseId) {
-        window.location.href = 'EditExplode?CourseId=' + courseId;
     }
 
     $(document).ready(function () {

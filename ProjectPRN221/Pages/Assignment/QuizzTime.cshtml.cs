@@ -16,7 +16,7 @@ namespace ProjectPRN221.Pages.Assignment
             var sessionValue = HttpContext.Session.GetString("Session_User");
             if (sessionValue == null)
             {
-                return RedirectToPage("/Authentication/ActiveAccount");
+                return RedirectToPage("/Authentication/login");
             }
             // Check if course is exist and user was enroll on that course
             Course course = DBContext.Courses.Include(p => p.Quizzes).FirstOrDefault(p => p.Id == CourseID);
