@@ -1,0 +1,36 @@
+﻿@page
+@model ProjectPRN221.Pages.Explodes.DetailsModel
+@{
+    ViewData["Title"] = "Details";
+}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <h1>@Model.Explode.Title</h1>
+                <iframe width="650" height="400" src="https://www.youtube.com/embed/@Model.Explode.Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <h3>Main content</h3>
+                <p>@Model.Explode.Content</p>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <ul class="list-group list-group-flush">
+                        @foreach (var e in Model.Course.Explodes.OrderBy(x => x.Content))
+                        {
+                            <li class="list-group-item @(e.Id == Model.Explode.Id ? "active" : "")">
+                                <a asp-page="./Details" asp-route-eid="@e.Id" asp-route-cid="@Model.Course.Id">@e.Title</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<style>
+    .list-group-item.active {
+        background-color: #007bff;
+        color: white;
+        font-weight: bold;
+    }
+</style>

@@ -15,7 +15,6 @@ namespace ProjectPRN221.Pages.Courses
         public Course Course { get; set; } = default!;
         public User Lecture { get; set; } = default!;
         public User currUser { get; set; } = default!;
-        public IList<Explode> Explode { get; set; } = default!;
         public long Enrolled { get; set; } = default!;
         public long Duration { get; set; } = default!;
 
@@ -26,7 +25,7 @@ namespace ProjectPRN221.Pages.Courses
             //lay user hien tai
             currUser = new User()
             {
-                Id = 3,
+                Id = 2,
                 Role = "Student",
             };
             if (id == null || _context.Courses == null)
@@ -46,19 +45,16 @@ namespace ProjectPRN221.Pages.Courses
             {
                 isEndrolled = true;
             }
-            var explode = await _context.Explodes.Where(e => e.CourseId == id).ToListAsync();
-
             Duration = await _context.Explodes.Where(e => e.CourseId != id).CountAsync();
 
             var lecture = await _context.Users
                             .FirstOrDefaultAsync(l => l.Id == course.UserId);
-            if (course == null)
+            if (course == null && lecture == null)
             {
                 return NotFound();
             }
 
             Course = course;
-            Explode = explode;
             Lecture = lecture;
 
             return Page();
@@ -78,7 +74,7 @@ namespace ProjectPRN221.Pages.Courses
             if (currUser == null)
             {
                 //return trang dang nhap
-                return RedirectToPage("/Account/Login");
+                return RedirectToPage("/Authentication/login");
             }
 
             if (id == null || _context.Courses == null)
@@ -109,7 +105,7 @@ namespace ProjectPRN221.Pages.Courses
             if (currUser == null)
             {
                 //return trang dang nhap
-                return RedirectToPage("/Account/Login");
+                return RedirectToPage("/Authentication/login");
             }
             if (currUser.Role.Equals("Student"))
             {
