@@ -10,8 +10,6 @@ namespace ProjectPRN221.Models
         public string? Type { get; set; }
         public DateTime? ExpiredDate { get; set; }
         public bool? IsDeleted { get; set; }
-        public string? Content { get; set; }
-        public string ? Email { get; set; }
 
         public virtual User? User { get; set; }
     }
