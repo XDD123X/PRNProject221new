@@ -90,7 +90,14 @@ INSERT INTO users (email, password, role, username, is_deleted)
 VALUES 
 ('user1@example.com', 'password1', 'Student', 'user1', 0),
 ('user2@example.com', 'password2', 'Student', 'user2', 0),
-('lecturer1@example.com', 'password', 'Lecturer', 'lecturer1', 0);
+('user3@example.com', 'password3', 'Student', 'user3', 0),
+('user4@example.com', 'password4', 'Student', 'user4', 0),
+('user5@example.com', 'password5', 'Student', 'user5', 0),
+('user6@example.com', 'password6', 'Student', 'user6', 0),
+('lecturer1@example.com', 'password', 'Lecture1', 'lecturer1', 0),
+('lecturer2@example.com', 'password', 'Lecture2', 'lecturer2', 0),
+('lecturer3@example.com', 'password', 'Lecture3', 'lecturer3', 0),
+('lecturer4@example.com', 'password', 'Lecture4', 'lecturer4', 0),
 
 
 -- Courses
@@ -108,9 +115,9 @@ INSERT INTO [dbo].[courses] (user_id, title, thumbnail, categories, description,
 
 INSERT INTO courses (user_id, title, thumbnail, categories, description, price, created_at, updated_at, is_actived, enrol_nums, is_deleted)
 VALUES
-(4, 'User Research for User', 'thumbnail_url_1.jpg', 'Research', 'Learn about user research techniques.', 29.99, GETDATE(), GETDATE(), 1, 50, 0),
-(4, 'Web Development Fundamentals', 'thumbnail_url_2.jpg', 'Web Development', 'Introductory course on web development.', 19.99, GETDATE(), GETDATE(), 1, 80, 0),
-(4, 'Data Analysis with Python', 'thumbnail_url_3.jpg', 'Data Science', 'Learn data analysis using Python.', 39.99, GETDATE(), GETDATE(), 1, 60, 0);
+(4, 'User Research for User', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTkfaWZXo9v8ltwKPSXKwKcTXYWCcV49Pt7pw&s', 'Research', 'Learn about user research techniques.', 29.99, GETDATE(), GETDATE(), 1, 50, 0),
+(4, 'Web Development Fundamentals', 'https://content.nordlayer.com/uploads/network_security_basics_7e0ba955f6.webp', 'Web Development', 'Introductory course on web development.', 19.99, GETDATE(), GETDATE(), 1, 80, 0),
+(4, 'Data Analysis with Python', 'https://pyimagesearch.com/wp-content/uploads/2019/01/python_ml_header.png', 'Data Science', 'Learn data analysis using Python.', 39.99, GETDATE(), GETDATE(), 1, 60, 0);
 
 -- enroll course
 INSERT INTO enroled_courses (user_id, course_id, created_at, updated_at, is_deleted)
@@ -122,10 +129,14 @@ VALUES
 --explode
 INSERT INTO explodes (course_id, content, title, video, is_deleted)
 VALUES
-(1, 'Introduction to User Research', 'Intro Video', 'video_url_1.mp4', 0),
-(1, 'User Persona Creation', 'Persona', 'video_url_2.mp4', 0),
-(2, 'Setting Up Your Development Environment', 'Setup', 'video_url_3.mp4', 0),
-(3, 'Python Basics', 'Python Intro', 'video_url_4.mp4', 0);
+(1, 'Lesson1: Introduction to User Research', 'Intro Video', 'zwsPND378OQ', 0),
+(1, 'Lesson2: User Persona Creation', 'Persona', '7BJiPyN4zZ0', 0),
+(1, 'Lesson3', 'NewThing3', 'JG0pdfdKjgQ', 0),
+(1, 'Lesson4', 'NewThing4', 'AzmdwZ6e_aM', 0),
+(2, 'Lesson1: Setting Up Your Development Environment', 'Setup', 'ZotVkQDC6mU', 0),
+(2, 'Lesson2: Setting Up Your Development Environment', 'Setup', 'ZotVkQDC6mU', 0),
+(2, 'Lesson3; Setting Up Your Development Environment', 'Setup', 'ZotVkQDC6mU', 0),
+(3, 'Python Basics', 'Python Intro', 'LYnrFSGLCl8', 0);
 
 -- Quizzes for each course
 
@@ -262,9 +273,19 @@ INSERT INTO [dbo].[quizzes] (course_id, question, option_1, option_2, option_3, 
 -- history of quiz attempts
 INSERT INTO history_quizzes (user_id, quizz_id, answer, is_deleted)
 VALUES
-(1, 1, 1, 0),
-(2, 2, 1, 0),
-(1, 3, 1, 0);
+(2, 1, 1, 0),
+(3, 2, 1, 0),
+(2, 1, 1, 0),
+(3, 2, 1, 0),
+(2, 1, 1, 0),
+(3, 2, 1, 0),
+(2, 1, 1, 0),
+(3, 2, 1, 0),
+(2, 1, 1, 0),
+(3, 2, 1, 0),
+(2, 1, 1, 0),
+(3, 2, 1, 0),
+(2, 3, 1, 0);
 GO
 
 -- CODING TIME
@@ -308,3 +329,6 @@ BEGIN
 	select @revenues = SUM(c.price) from enroled_courses ec
 	join courses c on c.id = ec.course_id
 END
+
+
+select * from explodes

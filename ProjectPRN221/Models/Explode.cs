@@ -9,6 +9,7 @@ namespace ProjectPRN221.Models
         public long? CourseId { get; set; }
         public string? Content { get; set; }
         public string? Title { get; set; }
+        public string? Video { get; set; }
         public bool? IsDeleted { get; set; }
 
         public virtual Course? Course { get; set; }

@@ -135,6 +135,11 @@ namespace ProjectPRN221.Models
                     .IsUnicode(false)
                     .HasColumnName("title");
 
+                entity.Property(e => e.Video)
+                    .HasMaxLength(255)
+                    .IsUnicode(false)
+                    .HasColumnName("video");
+
                 entity.HasOne(d => d.Course)
                     .WithMany(p => p.Explodes)
                     .HasForeignKey(d => d.CourseId)

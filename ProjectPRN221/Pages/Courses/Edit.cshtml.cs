@@ -30,7 +30,7 @@ namespace ProjectPRN221.Pages.Courses
             if (currUser == null)
             {
                 //return trang dang nhap
-                return RedirectToPage("/Account/Login");
+                return RedirectToPage("/Authentication/login");
             }
             if (id == null)
             {
@@ -59,7 +59,7 @@ namespace ProjectPRN221.Pages.Courses
             if (currUser == null)
             {
                 //return trang dang nhap
-                return RedirectToPage("/Account/Login");
+                return RedirectToPage("/Authentication/login");
             }
             if (!ModelState.IsValid)
             {
@@ -93,7 +93,7 @@ namespace ProjectPRN221.Pages.Courses
             if (currUser == null)
             {
                 //return trang dang nhap
-                return RedirectToPage("/Account/Login");
+                return RedirectToPage("/Authentication/login");
             }
 
             if (id == null || _context.Courses == null)

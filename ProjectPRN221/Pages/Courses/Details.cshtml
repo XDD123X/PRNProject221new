@@ -39,9 +39,23 @@
 
                 <h1>What You’ll Learn?</h1>
                 <ul class="list-unstyled">
-                    @foreach (var explode in Model.Explode)
+                    @foreach (var explode in Model.Course.Explodes)
                     {
-                        <li class="mb-3"> <i class="fas fa-check text-info me-2"></i>@explode.Title </li>
+                        if (Model.isEndrolled)
+                        {
+                            <li class="mb-3">
+                                <i class="fas fa-plus text-info me-2" onclick="showContent('@explode.Id')"></i>
+                                <a asp-page="/Explodes/Details" asp-route-eid="@explode.Id" asp-route-cid="@Model.Course.Id">@explode.Title</a>
+                                <div id="content-@explode.Id" style="display:none;">
+                                    <p>@explode.Content</p>
+                                </div>
+                                
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="mb-3"> <i class="fas fa-plus text-info me-2">  </i>@explode.Title</li>
+                        }
                     }
                 </ul>
             </div>
@@ -128,3 +142,13 @@
         </div>
     </div>
 </section>
+<script>
+    function showContent(explodeId) {
+        var Container = document.getElementById('content-' + explodeId);
+        if (Container.style.display === "none" || Container.style.display === "") {
+            Container.style.display = "block";
+        } else {
+            Container.style.display = "none";
+        }
+    }
+</script>

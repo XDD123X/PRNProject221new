@@ -52,7 +52,18 @@
                 </div>
                 <div class="col-md-4">
                     <div class="card">
-                        <!-- Add any additional content or controls here for the sidebar -->
+                        <ul class="list-unstyled">
+                            @foreach (var explode in Model.Course.Explodes)
+                            {
+                                <li class="mb-3">
+                                    <i class="fas fa-plus text-info me-2" onclick="showVideo('@explode.Id')"></i>
+                                    <a asp-page="/Explodes/Details" asp-route-eid="@explode.Id" asp-route-cid="@Model.Course.Id">@explode.Title</a>
+                                    <div id="video-@explode.Id" class="video-container" style="display:none;">
+                                        <iframe width="320" height="240" src="https://www.youtube.com/embed/@explode.Video" frameborder="0" allowfullscreen></iframe>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -64,9 +75,13 @@
         </form>
     </div>
 </section>
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+<script>
+    function showVideo(explodeId) {
+        var videoContainer = document.getElementById('video-' + explodeId);
+        if (videoContainer.style.display === "none" || videoContainer.style.display === "") {
+            videoContainer.style.display = "block";
+        } else {
+            videoContainer.style.display = "none";
+        }
     }
-}
+</script>
