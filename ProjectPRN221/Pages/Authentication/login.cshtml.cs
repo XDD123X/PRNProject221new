@@ -35,13 +35,18 @@ namespace ProjectPRN221.Pages.Authentication
 				}
 
 				string hashedPassword = student.Password;
+
+				Console.WriteLine("hashPassword: " + hashedPassword);
+				Console.WriteLine(BCrypt.Net.BCrypt.HashPassword(txtPassword));
 				if (!BCrypt.Net.BCrypt.Verify(txtPassword, hashedPassword))
 				{
 					ViewData["error"] = "Account is not existed!";
 					return Page();
 				}
 
-				await _cache.SetRecordAsync("Session" + "_" + student.Id, student.Id + "", TimeSpan.FromMinutes(30));
+				HttpContext.Session.SetString("Session_User", student.Id+"");
+				var sessionValue = HttpContext.Session.GetString("Session_User");
+				Console.WriteLine(sessionValue);
 			}
 
 

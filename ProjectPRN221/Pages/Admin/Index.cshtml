@@ -2,7 +2,7 @@
 @model ProjectPRN221.Pages.Admin.IndexModel
 @using ProjectPRN221.Models;
 @{
-    Layout = "";
+    Layout = "Layout";
 }
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
@@ -55,7 +55,7 @@
     <div class="header">
         <h2>Statistic</h2>
     </div>
-    <canvas id="userChart" width="400" height="200"></canvas>
+    @* <canvas id="userChart" width="400" height="200"></canvas> *@
     <div class="attribute">
         <div class="card">
             <div class="card-title">Total Revenues</div>
@@ -76,34 +76,34 @@
         const liElement = document.querySelector(".Home");
         liElement.classList.toggle("active");
 
-        var userData = {
-            labels: ["Free Users", "Premium Users"],
-            datasets: [
-                {
-                    data: [@ViewData["FreeUser"], @ViewData["PremiumUser"]],
-                    backgroundColor: ["rgba(75,192,192,0.2)", "rgba(255,99,132,0.2)"],
-                    borderColor: ["rgba(75,192,192,1)", "rgba(255,99,132,1)"],
-                    borderWidth: 1
-                }
-            ]
-        };
+        // var userData = {
+        //     labels: ["New Users"],
+        //     datasets: [
+        //         {
+        //             data: [@ViewData["NewUser"]],
+        //             backgroundColor: ["rgba(75,192,192,0.2)", "rgba(255,99,132,0.2)"],
+        //             borderColor: ["rgba(75,192,192,1)", "rgba(255,99,132,1)"],
+        //             borderWidth: 1
+        //         }
+        //     ]
+        // };
 
-        // Get the canvas element
-        var ctx = document.getElementById('userChart').getContext('2d');
+        // // Get the canvas element
+        // var ctx = document.getElementById('userChart').getContext('2d');
 
-        // Create a doughnut chart
-        var userChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: userData,
-            options: {
-                plugins: {
-                    title: {
-                        display: true,
-                        text: 'User Upgrade Account Chart'
-                    }
-                }
-            }
-        });
+        // // Create a doughnut chart
+        // var userChart = new Chart(ctx, {
+        //     type: 'doughnut',
+        //     data: userData,
+        //     options: {
+        //         plugins: {
+        //             title: {
+        //                 display: true,
+        //                 text: 'User Upgrade Account Chart'
+        //             }
+        //         }
+        //     }
+        // });
     }
 
     window.onload = init;

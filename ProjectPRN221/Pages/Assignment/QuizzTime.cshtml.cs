@@ -7,13 +7,21 @@ namespace ProjectPRN221.Pages.Assignment
 {
     public class AssignmentModel : PageModel
     {
-
         PROJECT_PRUContext DBContext = new PROJECT_PRUContext();
-        int UserId;
+        private int UserId;
+        private long CourseID;
         public IActionResult OnGet(long CourseID, int UserID, Boolean IsViewing)
         {
+            // Check if user remain login
+            var sessionValue = HttpContext.Session.GetString("Session_User");
+            if (sessionValue == null)
+            {
+                return RedirectToPage("/Authentication/ActiveAccount");
+            }
+            // Check if course is exist and user was enroll on that course
             Course course = DBContext.Courses.Include(p => p.Quizzes).FirstOrDefault(p => p.Id == CourseID);
-            if (course == null)
+            EnroledCourse ec = DBContext.EnroledCourses.FirstOrDefault(p => p.CourseId == CourseID &&  p.UserId == UserID);
+            if (course == null || ec == null)
             {
                 return RedirectToPage("/Courses/Index");
             }
@@ -22,7 +30,8 @@ namespace ProjectPRN221.Pages.Assignment
             {
                 ViewData["history"] = DBContext.HistoryQuizzes.Include(p => p.Quizz).Where(p => p.Quizz.CourseId == CourseID).ToList();
             }
-            this.UserId = UserId;
+            this.UserId = UserID;
+            this.CourseID = CourseID;
             ViewData["course"] = DBContext.Courses.Include(p => p.Quizzes).FirstOrDefault(p => p.Id == CourseID);
             ViewData["isViewing"] = IsViewing;
             return Page();
@@ -60,11 +69,11 @@ namespace ProjectPRN221.Pages.Assignment
                     DBContext.Add(hq);
                 }
             }
-            Console.WriteLine(point);
 
             DBContext.SaveChanges();
 
-            return RedirectToPage("Index");
+            ViewData["point"] = point;
+            return OnGet(CourseID, UserId, true);
         }
     }
 }

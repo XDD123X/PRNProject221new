@@ -1,0 +1,314 @@
+﻿@page "{handler?}"
+@model ProjectPRN221.Pages.Admin.UsersModel
+@using ProjectPRN221.Models
+@{
+    Layout = "Layout.cshtml";
+}
+@{
+    PROJECT_PRUContext _context = new PROJECT_PRUContext();
+    int getMaximumPagination = (int)ViewData["MaxPage"];
+    int recordPerPage = (int)ViewData["recordPerPage"];
+}
+<style>
+    .styled-table {
+        text-align: left;
+        border-collapse: collapse;
+        margin: 0 auto;
+        margin-top: 30px;
+        font-size: 0.9em;
+        font-family: sans-serif;
+        min-width: 650px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+        background: white;
+    }
+
+        .styled-table thead tr {
+            text-align: left;
+        }
+
+        .styled-table th,
+        .styled-table td {
+            padding: 12px 15px;
+        }
+
+        .styled-table tbody tr {
+            border-bottom: 1px solid #dddddd;
+        }
+
+            .styled-table tbody tr:nth-of-type(even) {
+                background-color: #f3f3f3;
+            }
+
+            .styled-table tbody tr:last-of-type {
+                border-bottom: 2px solid #009879;
+            }
+
+            .styled-table tbody tr.active-row {
+                font-weight: bold;
+                color: #009879;
+            }
+
+    .header h2 {
+        text-align: center;
+    }
+
+    .content #pagination {
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+
+    #pageNumber, svg {
+        margin: 0 10px;
+    }
+
+    img {
+        -webkit-user-drag: none;
+        -moz-user-drag: none;
+        -ms-user-drag: none;
+        user-drag: none;
+    }
+
+
+    .content {
+        width: 900px;
+        background: white;
+        padding: 20px 20px;
+        margin: 0 auto;
+        transition: margin-left 0.5s ease-out;
+    }
+
+        .content.active {
+            margin-left: 450px;
+        }
+
+    .action {
+        text-align: center;
+    }
+
+        .action img {
+            margin: 0 10px;
+        }
+
+    .sidebar {
+        position: fixed;
+    }
+
+    .menuToggle {
+        position: fixed;
+    }
+</style>
+
+<div class="content">
+    <div class="header">
+        <h2>User table</h2>
+    </div>
+    <table class="styled-table">
+        <thead>
+            <tr>
+                <th>
+                    ID
+                </th>
+                <th>
+                    Email
+                </th>
+                <th>
+                    Username
+                </th>
+                <th>Is deleted</th>
+                <th class="action">Action</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+        </tbody>
+    </table>
+
+    <div id="pagination">
+        <svg onclick="move('first')" fill="#000000" height="21.6px" width="30px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+             viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve">
+<path d="M472.8,90.1L298.6,192.5v-73.9c0-28.4-17.6-41.2-39.2-28.5l-152.8,89.8v-52c0-23.6-19.1-42.7-42.7-42.7H42.7
+	C19.1,85.3,0,104.4,0,128V384c0,23.5,19.1,42.7,42.7,42.7H64c23.5,0,42.7-19.1,42.7-42.7v-51.9l152.8,89.8
+	c21.5,12.7,39.2-0.2,39.2-28.5v-74l174.2,102.5c21.5,12.7,39.2-0.2,39.2-28.5V118.6C512,90.2,494.4,77.4,472.8,90.1z" />
+</svg>
+        <svg onclick="move('previous')" width="30px" height="21.6px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2.75 20C2.75 20.5523 3.19772 21 3.75 21C4.30228 21 4.75 20.5523 4.75 20L4.75 4C4.75 3.44772 4.30229 3 3.75 3C3.19772 3 2.75 3.44772 2.75 4V20Z" fill="#212121" />
+            <path d="M20.75 19.0526C20.75 20.4774 19.1383 21.305 17.9803 20.4748L7.51062 12.9682C6.50574 12.2477 6.54467 10.7407 7.5854 10.073L18.0551 3.35665C19.2198 2.60946 20.75 3.44583 20.75 4.82961L20.75 19.0526Z" fill="#212121" />
+        </svg>
+        <select id="pageSelect" onchange="selectPage()">
+            @for (int index = 1; index <= getMaximumPagination; index++)
+            {
+                <option value="@index">Page @index</option>
+            }
+        </select>
+        <svg onclick="move('next')" width="30px" height="21.6px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3.76172 7.21957V16.7896C3.76172 18.7496 5.89172 19.9796 7.59172 18.9996L11.7417 16.6096L15.8917 14.2096C17.5917 13.2296 17.5917 10.7796 15.8917 9.79957L11.7417 7.39957L7.59172 5.00957C5.89172 4.02957 3.76172 5.24957 3.76172 7.21957Z" fill="#292D32" />
+            <path d="M20.2383 18.9303C19.8283 18.9303 19.4883 18.5903 19.4883 18.1803V5.82031C19.4883 5.41031 19.8283 5.07031 20.2383 5.07031C20.6483 5.07031 20.9883 5.41031 20.9883 5.82031V18.1803C20.9883 18.5903 20.6583 18.9303 20.2383 18.9303Z" fill="#292D32" />
+        </svg>
+        <svg onclick="move('last')" fill="#000000" height="21.6px" width="30px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+             viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve">
+<path d="M469.3,95.3H448c-23.5,0-42.7,19.1-42.7,42.7v52l-152.7-89.8c-21.6-12.7-39.2,0.1-39.2,28.5v73.9L39.2,100.1
+	C17.6,87.4,0,100.2,0,128.6v274.8c0,28.3,17.6,41.2,39.2,28.5l174.2-102.5v74c0,28.3,17.6,41.2,39.2,28.5l152.7-89.8V394
+	c0,23.5,19.1,42.7,42.7,42.7h21.3c23.5,0,42.7-19.1,42.7-42.7V138C512,114.4,492.9,95.3,469.3,95.3z" />
+</svg>
+    </div>
+</div>
+
+
+<script>
+    let pageNumber = 1;
+    const maximumPaginationPage = @getMaximumPagination;
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        let Menulist = document.querySelectorAll(".Menulist li");
+        Menulist.forEach((item) => item.classList.remove("active"));
+        const liElement = document.querySelector(".User");
+        liElement.classList.toggle("active");
+    });
+
+    function selectPage() {
+        const selectedOption = document.getElementById("pageSelect").selectedIndex;
+        const selectedValue = document.getElementById("pageSelect").options[selectedOption].value;
+        pageNumber = selectedValue;
+        loadPage();
+    }
+
+    function move(page) {
+        if (pageNumber == page) return;
+        switch (page) {
+            case 'first': {
+                document.getElementById("pageSelect").selectedIndex = 0;
+                pageNumber = 1;
+                loadPage();
+                break;
+            }
+            case 'previous': {
+                if (parseInt(pageNumber) > 1) {
+                    document.getElementById("pageSelect").selectedIndex--;
+                    pageNumber--;
+                    loadPage();
+                }
+                break;
+            }
+            case 'next': {
+                if (parseInt(pageNumber) < parseInt(maximumPaginationPage)) {
+                    document.getElementById("pageSelect").selectedIndex++;
+                    pageNumber++;
+                    loadPage();
+                }
+                break;
+            }
+            case 'last': {
+                pageNumber = maximumPaginationPage;
+                document.getElementById("pageSelect").selectedIndex = document.getElementById("pageSelect").options.length - 1;
+                loadPage();
+                break;
+            }
+        }
+    }
+    function loadPage() {
+        $.ajax({
+            url: `Users/Page?index=${pageNumber}`,
+            type: 'GET',
+            success: function (data) {
+
+                const tableBody = $('#tableBody');
+                tableBody.empty(); 
+                let count = 0;
+                // console.log(data);
+
+                for (const user of data) {
+                    count++;
+
+                    const row = $('<tr>');
+                    if (user.isBanIP == true) {
+                        row.css('color', 'red');
+                    }
+
+                    row.append('<td>' + user["id"] + '</td>');
+                    row.append('<td>' + user["email"] + '</td>');
+                    row.append('<td>' + user["username"] + '</td>');
+                    row.append('<td>' + user["isDeleted"] + '</td>');
+
+                    const actionCell = $('<td>');
+                    actionCell.addClass('action');
+
+                    if (user["isDeleted"] == true || user["isDeleted"] != null) {
+                        var img = document.createElement('img');
+                        img.src = 'https://www.svgrepo.com/show/532493/eye.svg';
+                        img.title = 'Undelete user';
+                        img.width = 30;
+                        img.height = 30;
+                        img.alt = 'Active';
+                        img.setAttribute('onclick', 'enable(' + user.userId + ')');
+
+                        actionCell.append(img);
+                    } else {
+                        var img = document.createElement('img');
+                        img.src = 'https://www.svgrepo.com/show/532465/eye-slash.svg';
+                        img.title = 'Delete user';
+                        img.width = 30;
+                        img.height = 30;
+                        img.alt = 'Deactive';
+                        img.setAttribute('onclick', 'disable(' + user.userId + ')');
+
+
+                        actionCell.append(img);
+                    }
+                    row.append(actionCell);
+                    tableBody.append(row);
+                }
+                for (let i = 1; i <= (10 - count); i++) {
+
+                    const newRow = $('<tr>');
+                    newRow.append('<td>\u00A0</td>');
+                    newRow.append('<td>\u00A0</td>');
+                    newRow.append('<td>\u00A0</td>');
+                    newRow.append('<td>\u00A0</td>');
+                    newRow.append('<td>\u00A0</td>');
+                    tableBody.append(newRow);
+                }
+            },
+            error: function (error) {
+                console.error(error);
+            }
+        });
+
+
+    }
+    // Delete user
+    function disable(userId) {
+        $.ajax({
+            url: '/Users/Disable',
+            type: 'POST',
+            data: {
+                id: parseInt(userId)
+            },
+            success: function (response) {
+                loadPage();
+            }, error: function (error) {
+                console.error(error);
+            }
+        });
+    }
+    // Undelete user
+    function enable(userId) {
+        $.ajax({
+            url: '/Users/Enable',
+            type: 'POST',
+            data: {
+                id: parseInt(userId)
+            },
+            success: function (response) {
+                loadPage();
+            }, error: function (error) {
+                console.error(error);
+            }
+        });
+    }
+    $(document).ready(function () {
+        loadPage();
+    });
+</script>
