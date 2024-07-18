@@ -14,12 +14,15 @@ namespace ProjectPRN221.Pages.Explodes
 
         public async Task<IActionResult> OnGetAsync(long? eid, long? cid)
         {
-            //lay user hien tai
-            currUser = new User()
+            string currUserID = HttpContext.Session.GetString("Session_User");
+            if (currUserID == null || currUserID == "")
             {
-                Id = 3,
-                Role = "Lecture",
-            };
+                return RedirectToPage("/Authentication/login");
+            }
+            else
+            {
+                currUser = _context.Users.FirstOrDefault(c => c.Id == Int32.Parse(currUserID));
+            }
             if (eid == null || _context.Courses == null || cid == null || _context.Explodes == null)
             {
                 return NotFound();

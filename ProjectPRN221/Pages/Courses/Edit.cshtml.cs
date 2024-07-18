@@ -16,21 +16,20 @@ namespace ProjectPRN221.Pages.Courses
         private readonly ProjectPRN221.Models.PROJECT_PRUContext _context = new PROJECT_PRUContext();
 
         [BindProperty]
-        public Course Course { get; set; }
+        public Course Course { get; set; } = default!;
         public User currUser { get; set; } = default!;
 
 
         public async Task<IActionResult> OnGetAsync(long? id)
         {
-            currUser = new User()
+            string currUserID = HttpContext.Session.GetString("Session_User");
+            if (currUserID == null || currUserID == "")
             {
-                Id = 1,
-                Role = "Lecture",
-            };
-            if (currUser == null)
-            {
-                //return trang dang nhap
                 return RedirectToPage("/Authentication/login");
+            }
+            else
+            {
+                currUser = _context.Users.FirstOrDefault(c => c.Id == Int32.Parse(currUserID));
             }
             if (id == null)
             {
@@ -51,15 +50,14 @@ namespace ProjectPRN221.Pages.Courses
 
         public async Task<IActionResult> OnPostAsync(long? id)
         {
-            currUser = new User()
+            string currUserID = HttpContext.Session.GetString("Session_User");
+            if (currUserID == null || currUserID == "")
             {
-                Id = 1,
-                Role = "Lecture",
-            };
-            if (currUser == null)
-            {
-                //return trang dang nhap
                 return RedirectToPage("/Authentication/login");
+            }
+            else
+            {
+                currUser = _context.Users.FirstOrDefault(c => c.Id == Int32.Parse(currUserID));
             }
             if (!ModelState.IsValid)
             {
@@ -85,15 +83,14 @@ namespace ProjectPRN221.Pages.Courses
 
         public async Task<IActionResult> OnPostDeleteAsync(long? id)
         {
-            currUser = new User()
+            string currUserID = HttpContext.Session.GetString("Session_User");
+            if (currUserID == null || currUserID == "")
             {
-                Id = 1,
-                Role = "Lecture",
-            };
-            if (currUser == null)
-            {
-                //return trang dang nhap
                 return RedirectToPage("/Authentication/login");
+            }
+            else
+            {
+                currUser = _context.Users.FirstOrDefault(c => c.Id == Int32.Parse(currUserID));
             }
 
             if (id == null || _context.Courses == null)

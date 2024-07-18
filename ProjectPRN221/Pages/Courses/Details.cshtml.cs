@@ -22,12 +22,24 @@ namespace ProjectPRN221.Pages.Courses
 
         public async Task<IActionResult> OnGetAsync(long? id)
         {
-            //lay user hien tai
-            currUser = new User()
+            string currUserID = HttpContext.Session.GetString("Session_User");
+            if (currUserID == null || currUserID == "")
             {
-                Id = 2,
-                Role = "Student",
-            };
+                currUser = null;
+                isEndrolled = false;
+            }
+            else
+            {
+                currUser = _context.Users.FirstOrDefault(c => c.Id == Int32.Parse(currUserID));
+                if (_context.EnroledCourses.FirstOrDefault(ec => ec.CourseId == id && ec.UserId == currUser.Id) == null)
+                {
+                    isEndrolled = false;
+                }
+                else
+                {
+                    isEndrolled = true;
+                }
+            }
             if (id == null || _context.Courses == null)
             {
                 return NotFound();
@@ -37,14 +49,7 @@ namespace ProjectPRN221.Pages.Courses
                 .Include(c => c.Explodes)
                 .FirstOrDefaultAsync(m => m.Id == id);
             Enrolled = await _context.EnroledCourses.Where(e => e.CourseId == id).CountAsync();
-            if (_context.EnroledCourses.FirstOrDefault(ec => ec.CourseId == id && ec.UserId == currUser.Id) == null)
-            {
-                isEndrolled = false;
-            }
-            else
-            {
-                isEndrolled = true;
-            }
+            
             Duration = await _context.Explodes.Where(e => e.CourseId != id).CountAsync();
 
             var lecture = await _context.Users
@@ -66,15 +71,14 @@ namespace ProjectPRN221.Pages.Courses
         }
         public async Task<IActionResult> OnPostDeleteAsync(long? id)
         {
-            currUser = new User()
+            string currUserID = HttpContext.Session.GetString("Session_User");
+            if (currUserID == null || currUserID == "")
             {
-                Id = 1,
-                Role = "Lecture",
-            };
-            if (currUser == null)
-            {
-                //return trang dang nhap
                 return RedirectToPage("/Authentication/login");
+            }
+            else
+            {
+                currUser = _context.Users.FirstOrDefault(c => c.Id == Int32.Parse(currUserID));
             }
 
             if (id == null || _context.Courses == null)
@@ -104,7 +108,6 @@ namespace ProjectPRN221.Pages.Courses
             currUser = _context.Users.FirstOrDefault(u => u.Id == uid);
             if (currUser == null)
             {
-                //return trang dang nhap
                 return RedirectToPage("/Authentication/login");
             }
             if (currUser.Role.Equals("Student"))
