@@ -19,6 +19,8 @@ namespace ProjectPRN221.Models
         public string? Role { get; set; }
         public string? Username { get; set; }
         public bool? IsDeleted { get; set; }
+        public DateTime? CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
 
         public virtual ICollection<Course> Courses { get; set; }
         public virtual ICollection<EnroledCourse> EnroledCourses { get; set; }
