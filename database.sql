@@ -102,16 +102,16 @@ VALUES
 
 -- Courses
 INSERT INTO [dbo].[courses] (user_id, title, thumbnail, categories, description, price, created_at, is_actived, enrol_nums) VALUES 
-(4, 'Introduction to HTML and CSS', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTkfaWZXo9v8ltwKPSXKwKcTXYWCcV49Pt7pw&s','htlm and css','Learn the basics of HTML and CSS to create and style web pages.', 150.00, GETDATE(), 1, 0),
-(4 'JavaScript for Beginners', 'https://static.skillshare.com/uploads/video/thumbnails/0ab63be061d2a2051fc5a20337d2bc7f/original','java', 'Start your journey with JavaScript and learn how to add interactivity to your web pages.', 200.00, GETDATE(), 1, 0),
-(4,'Python Programming Fundamentals', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQvoCDSEmRLejWRBCidegBZHK_rTtT7LyWc9A&s', 'python','An introduction to Python programming covering basic concepts and syntax.', 250.00, GETDATE(), 1, 0),
-(4, 'Advanced SQL Queries', 'https://i.ytimg.com/vi/M-55BmjOuXY/hqdefault.jpg', 'sql', 'Master the art of writing complex SQL queries to manipulate and retrieve data.', 300.00, GETDATE(), 1, 0),
-(4, 'Web Development with Django', 'https://cdn.educba.com/academy/wp-content/uploads/2017/10/Python-and-Django-for-Web-Development.jpg', 'python', 'Build dynamic web applications using the Django framework in Python.', 350.00, GETDATE(), 1, 0),
-(4, 'ReactJS for Front-End Development', 'https://insights.daffodilsw.com/hubfs/Archna/Reactjs%20application%20development.jpg', 'ReactJS', 'Learn how to build modern web applications using ReactJS.', 400.00, GETDATE(), 1, 0),
-(4, 'Network Security Basics', 'https://content.nordlayer.com/uploads/network_security_basics_7e0ba955f6.webp', 'network', 'Understand the fundamentals of network security to protect against cyber threats.', 450.00, GETDATE(), 1, 0),
-(4, 'DevOps Essentials', 'https://images.ctfassets.net/wfutmusr1t3h/4ez2WNMQR71INMMV61qY45/c051e8c0717eea08136f110dc32c82e6/The_eight_stages_of_a_successful_DevOps_workflow.png', 'DevOps', 'Learn the key concepts of DevOps and how to implement them in your organization.', 500.00, GETDATE(), 1, 0),
-(4, 'Mobile App Development with Flutter', 'https://cdn.prod.website-files.com/5f841209f4e71b2d70034471/6078b650748b8558d46ffb7f_Flutter%20app%20development.png', 'flutter framework', 'Create cross-platform mobile applications using the Flutter framework.', 550.00, GETDATE(), 1, 0),
-(4, 'Machine Learning with Python', 'https://pyimagesearch.com/wp-content/uploads/2019/01/python_ml_header.png', 'python', 'Dive into machine learning concepts and techniques using Python.', 600.00, GETDATE(), 1, 0);
+(7, 'Introduction to HTML and CSS', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTkfaWZXo9v8ltwKPSXKwKcTXYWCcV49Pt7pw&s','htlm and css','Learn the basics of HTML and CSS to create and style web pages.', 150.00, GETDATE(), 1, 0),
+(7 'JavaScript for Beginners', 'https://static.skillshare.com/uploads/video/thumbnails/0ab63be061d2a2051fc5a20337d2bc7f/original','java', 'Start your journey with JavaScript and learn how to add interactivity to your web pages.', 200.00, GETDATE(), 1, 0),
+(7,'Python Programming Fundamentals', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQvoCDSEmRLejWRBCidegBZHK_rTtT7LyWc9A&s', 'python','An introduction to Python programming covering basic concepts and syntax.', 250.00, GETDATE(), 1, 0),
+(7, 'Advanced SQL Queries', 'https://i.ytimg.com/vi/M-55BmjOuXY/hqdefault.jpg', 'sql', 'Master the art of writing complex SQL queries to manipulate and retrieve data.', 300.00, GETDATE(), 1, 0),
+(7, 'Web Development with Django', 'https://cdn.educba.com/academy/wp-content/uploads/2017/10/Python-and-Django-for-Web-Development.jpg', 'python', 'Build dynamic web applications using the Django framework in Python.', 350.00, GETDATE(), 1, 0),
+(7, 'ReactJS for Front-End Development', 'https://insights.daffodilsw.com/hubfs/Archna/Reactjs%20application%20development.jpg', 'ReactJS', 'Learn how to build modern web applications using ReactJS.', 400.00, GETDATE(), 1, 0),
+(7, 'Network Security Basics', 'https://content.nordlayer.com/uploads/network_security_basics_7e0ba955f6.webp', 'network', 'Understand the fundamentals of network security to protect against cyber threats.', 450.00, GETDATE(), 1, 0),
+(7, 'DevOps Essentials', 'https://images.ctfassets.net/wfutmusr1t3h/4ez2WNMQR71INMMV61qY45/c051e8c0717eea08136f110dc32c82e6/The_eight_stages_of_a_successful_DevOps_workflow.png', 'DevOps', 'Learn the key concepts of DevOps and how to implement them in your organization.', 500.00, GETDATE(), 1, 0),
+(7, 'Mobile App Development with Flutter', 'https://cdn.prod.website-files.com/5f841209f4e71b2d70034471/6078b650748b8558d46ffb7f_Flutter%20app%20development.png', 'flutter framework', 'Create cross-platform mobile applications using the Flutter framework.', 550.00, GETDATE(), 1, 0),
+(7, 'Machine Learning with Python', 'https://pyimagesearch.com/wp-content/uploads/2019/01/python_ml_header.png', 'python', 'Dive into machine learning concepts and techniques using Python.', 600.00, GETDATE(), 1, 0);
 
 INSERT INTO courses (user_id, title, thumbnail, categories, description, price, created_at, updated_at, is_actived, enrol_nums, is_deleted)
 VALUES
