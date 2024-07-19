@@ -103,7 +103,7 @@ VALUES
 -- Courses
 INSERT INTO [dbo].[courses] (user_id, title, thumbnail, categories, description, price, created_at, is_actived, enrol_nums) VALUES 
 (7, 'Introduction to HTML and CSS', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTkfaWZXo9v8ltwKPSXKwKcTXYWCcV49Pt7pw&s','htlm and css','Learn the basics of HTML and CSS to create and style web pages.', 150.00, GETDATE(), 1, 0),
-(7 'JavaScript for Beginners', 'https://static.skillshare.com/uploads/video/thumbnails/0ab63be061d2a2051fc5a20337d2bc7f/original','java', 'Start your journey with JavaScript and learn how to add interactivity to your web pages.', 200.00, GETDATE(), 1, 0),
+(7, 'JavaScript for Beginners', 'https://static.skillshare.com/uploads/video/thumbnails/0ab63be061d2a2051fc5a20337d2bc7f/original','java', 'Start your journey with JavaScript and learn how to add interactivity to your web pages.', 200.00, GETDATE(), 1, 0),
 (7,'Python Programming Fundamentals', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQvoCDSEmRLejWRBCidegBZHK_rTtT7LyWc9A&s', 'python','An introduction to Python programming covering basic concepts and syntax.', 250.00, GETDATE(), 1, 0),
 (7, 'Advanced SQL Queries', 'https://i.ytimg.com/vi/M-55BmjOuXY/hqdefault.jpg', 'sql', 'Master the art of writing complex SQL queries to manipulate and retrieve data.', 300.00, GETDATE(), 1, 0),
 (7, 'Web Development with Django', 'https://cdn.educba.com/academy/wp-content/uploads/2017/10/Python-and-Django-for-Web-Development.jpg', 'python', 'Build dynamic web applications using the Django framework in Python.', 350.00, GETDATE(), 1, 0),
