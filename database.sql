@@ -97,7 +97,7 @@ VALUES
 ('lecturer1@example.com', 'password', 'Lecture1', 'lecturer1', 0),
 ('lecturer2@example.com', 'password', 'Lecture2', 'lecturer2', 0),
 ('lecturer3@example.com', 'password', 'Lecture3', 'lecturer3', 0),
-('lecturer4@example.com', 'password', 'Lecture4', 'lecturer4', 0)
+('lecturer4@example.com', 'password', 'Lecture4', 'lecturer4', 0);
 
 
 -- Courses

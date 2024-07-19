@@ -99,9 +99,14 @@
     .menuToggle {
         position: fixed;
     }
+
+    .IsDeleted {
+        background-color: gray !important;
+    }
 </style>
 
 <div class="content">
+    @Html.AntiForgeryToken()
     <div class="header">
         <h2>User table</h2>
     </div>
@@ -119,6 +124,7 @@
                 </th>
                 <th>Is deleted</th>
                 <th class="action">Action</th>
+
             </tr>
         </thead>
         <tbody id="tableBody">
@@ -155,10 +161,56 @@
     </div>
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="userModalLabel">Explode Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="UserId">Id</label>
+                        <input type="text" class="form-control" id="UserId" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="Email">Email</label>
+                        <input type="text" class="form-control" id="Email">
+                    </div>
+                    <div class="form-group">
+                        <label for="Role">Role</label>
+                        <input type="text" class="form-control" id="Role">
+                    </div>
+                    <div class="form-group">
+                        <label for="Username">Username</label>
+                        <input type="text" class="form-control" id="Username">
+                    </div>
+                    <div class="form-group d-flex align-items-center" style="justify-content: space-evenly;">
+                        <div class="form-group">
+                            <label for="IsDeleted">Is deleted</label>
+                            <input type="checkbox" class="form-check-input" id="IsDeleted">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="TryEdit()">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 <script>
     let pageNumber = 1;
     const maximumPaginationPage = @getMaximumPagination;
+    let listOfUser;
 
     document.addEventListener("DOMContentLoaded", function () {
 
@@ -215,18 +267,18 @@
             success: function (data) {
 
                 const tableBody = $('#tableBody');
-                tableBody.empty(); 
+                tableBody.empty();
                 let count = 0;
                 // console.log(data);
+                listOfUser = data;
 
                 for (const user of data) {
                     count++;
 
-                    const row = $('<tr>');
-                    if (user.isBanIP == true) {
-                        row.css('color', 'red');
+                    let row = $('<tr>');
+                    if (user.isDeleted) {
+                        row = $('<tr class="IsDeleted">');
                     }
-
                     row.append('<td>' + user["id"] + '</td>');
                     row.append('<td>' + user["email"] + '</td>');
                     row.append('<td>' + user["username"] + '</td>');
@@ -234,33 +286,11 @@
 
                     const actionCell = $('<td>');
                     actionCell.addClass('action');
-
-                    if (user["isDeleted"] == true || user["isDeleted"] != null) {
-                        var img = document.createElement('img');
-                        img.src = 'https://www.svgrepo.com/show/532493/eye.svg';
-                        img.title = 'Undelete user';
-                        img.width = 30;
-                        img.height = 30;
-                        img.alt = 'Active';
-                        img.setAttribute('onclick', 'enable(' + user.userId + ')');
-
-                        actionCell.append(img);
-                    } else {
-                        var img = document.createElement('img');
-                        img.src = 'https://www.svgrepo.com/show/532465/eye-slash.svg';
-                        img.title = 'Delete user';
-                        img.width = 30;
-                        img.height = 30;
-                        img.alt = 'Deactive';
-                        img.setAttribute('onclick', 'disable(' + user.userId + ')');
-
-
-                        actionCell.append(img);
-                    }
+                    actionCell.append('<img src="https://www.svgrepo.com/show/522527/edit-3.svg" title="Edit this user" width=30 height=30 alt="Edit this user" onclick=Edit("' + user["id"] + '")></img>')
                     row.append(actionCell);
                     tableBody.append(row);
                 }
-                for (let i = 1; i <= (10 - count); i++) {
+                for (let i = 1; i <= (@recordPerPage - count); i++) {
 
                     const newRow = $('<tr>');
                     newRow.append('<td>\u00A0</td>');
@@ -278,36 +308,58 @@
 
 
     }
-    // Delete user
-    function disable(userId) {
+    function TryEdit() {
+        const nguoiDung = {
+            id: document.getElementById('UserId').value,
+            email: document.getElementById('Email').value,
+            role: document.getElementById('Role').value,
+            username: document.getElementById('Username').value,
+
+            isDeleted: document.getElementById('IsDeleted').checked
+        };
+
         $.ajax({
-            url: '/Users/Disable',
+            url: 'Users/Edit',
             type: 'POST',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("XSRF-TOKEN",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+            },
             data: {
-                id: parseInt(userId)
+                user: nguoiDung
             },
             success: function (response) {
+                showToast("Thông báo", "Cập nhật người dùng thành công", "bi bi-check-square", "success");
                 loadPage();
             }, error: function (error) {
-                console.error(error);
+                showToast("Cập nhập không thành công", error, "bi bi-exclamation-triangle", "danger");
             }
         });
+
+        $('#userModal').modal('hide');
     }
-    // Undelete user
-    function enable(userId) {
-        $.ajax({
-            url: '/Users/Enable',
-            type: 'POST',
-            data: {
-                id: parseInt(userId)
-            },
-            success: function (response) {
-                loadPage();
-            }, error: function (error) {
-                console.error(error);
-            }
-        });
+    function formatDateForInput(dateStr) {
+        const date = new Date(dateStr);
+        const year = date.getFullYear();
+        const month = ('0' + (date.getMonth() + 1)).slice(-2);
+        const day = ('0' + date.getDate()).slice(-2);
+        return `${year}-${month}-${day}`;
     }
+
+
+    function Edit(userId) {
+        const user = listOfUser.find(c => c.id == userId);
+        if (user) {
+            $('#UserId').val(user.id);
+            $('#Email').val(user.email);
+            $('#Role').val(user.role);
+            $('#Username').val(user.username);
+            $('#IsDeleted').prop('checked', user.isDeleted);
+
+            $('#userModal').modal('show');
+        }
+    }
+
     $(document).ready(function () {
         loadPage();
     });

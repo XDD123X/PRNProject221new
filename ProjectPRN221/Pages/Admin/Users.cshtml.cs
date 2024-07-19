@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
+using Org.BouncyCastle.Tls;
 using ProjectPRN221.Models;
 
 namespace ProjectPRN221.Pages.Admin
@@ -44,6 +45,34 @@ namespace ProjectPRN221.Pages.Admin
                                                       .ToList();
 
             return new JsonResult(users);
+        }
+
+        public IActionResult OnPostEdit(User user)
+        {
+            try
+            {
+                User e = dbcontext.Users.FirstOrDefault(p => p.Id == user.Id);
+                if (e != null)
+                {
+                    e.Email = user.Email;
+                    e.IsDeleted = user.IsDeleted;
+                    e.Role = user.Role;
+                    e.Username = user.Username;
+
+                    dbcontext.Update(e);
+                    dbcontext.SaveChanges();
+                }
+                else
+                {
+                    return new JsonResult(new { success = false });
+                }
+            }
+            catch
+            {
+                return new JsonResult(new { success = false });
+
+            }
+            return new JsonResult(new { success = true });
         }
     }
 }

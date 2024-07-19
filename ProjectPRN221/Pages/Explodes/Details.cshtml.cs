@@ -14,19 +14,19 @@ namespace ProjectPRN221.Pages.Explodes
 
         public async Task<IActionResult> OnGetAsync(long? eid, long? cid)
         {
-            string currUserID = HttpContext.Session.GetString("Session_User");
-            if (currUserID == null || currUserID == "")
-            {
-                return RedirectToPage("/Authentication/login");
-            }
-            else
-            {
-                currUser = _context.Users.FirstOrDefault(c => c.Id == Int32.Parse(currUserID));
-            }
-            if (eid == null || _context.Courses == null || cid == null || _context.Explodes == null)
-            {
-                return NotFound();
-            }
+            //string currUserID = HttpContext.Session.GetString("Session_User");
+            //if (currUserID == null || currUserID == "")
+            //{
+            //    return RedirectToPage("/Authentication/login");
+            //}
+            //else
+            //{
+            //    currUser = _context.Users.FirstOrDefault(c => c.Id == Int32.Parse(currUserID));
+            //}
+            //if (eid == null || _context.Courses == null || cid == null || _context.Explodes == null)
+            //{
+            //    return NotFound();
+            //}
 
             var explode = await _context.Explodes
                 .FirstOrDefaultAsync(m => m.Id == eid);

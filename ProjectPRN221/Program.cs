@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Caching.Distributed;
 using ProjectPRN221.Core;
+
 namespace ProjectPRN221
 {
 	public class Program
@@ -23,7 +24,10 @@ namespace ProjectPRN221
 				options.Cookie.HttpOnly = true; // Make the session cookie HTTP-only
 				options.Cookie.IsEssential = true; // Essential for session state to work
 			});
-			var app = builder.Build();
+
+			builder.Services.AddAntiforgery(o => o.HeaderName = "XSRF-TOKEN"); 
+
+            var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())

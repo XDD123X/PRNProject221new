@@ -4,17 +4,39 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="~/css/admin/style.css" />
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <title>Admin Dashboard</title>
+
+    @await RenderSectionAsync("style", required: false)
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css" />
+
+    <link rel="stylesheet" href="~/css/admin/style.css" />
+    <style>
+        .toast-container .toast {
+            opacity: 0;
+            transform: translateX(100%);
+            transition: opacity 0.5s, transform 0.5s ease;
+        }
+
+            .toast-container .toast.show {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+
+    </style>
 </head>
 <body>
     <div>
         <nav>
             <div class="menuToggle"></div>
             <div class="sidebar">
-                <ul>
+                <ul style="
+    padding-left: 0px;
+">
                     <li class="logo" style="--bg: #333">
                         <a href="#">
                             <div class="icon">
@@ -40,17 +62,19 @@
                     </li>
                     <li class="Courses" style="--bg: #b145e9">
                         <a href="/Admin/Courses">
-                            <div class="icon"><ion-icon name="cart-outline"></ion-icon></div>
+                            <div class="icon">
+                                <ion-icon name="book-outline"></ion-icon>
+                            </div>
                             <div class="text">Courses</div>
                         </a>
                     </li>
-                    @* <li class="Settings" style="--bg: #e91e63">
-                        <a href="/Admin/Settings">
-                            <div class="icon">
-                                <ion-icon name="settings-outline"></ion-icon>
-                            </div>
-                            <div class="text">Settings</div>
-                        </a>
+                        @* <li class="Settings" style="--bg: #e91e63">
+                    <a href="/Admin/Settings">
+                    <div class="icon">
+                    <ion-icon name="settings-outline"></ion-icon>
+                    </div>
+                    <div class="text">Settings</div>
+                    </a>
                     </li> *@
             </div>
             <div class="bottom">
@@ -73,15 +97,22 @@
                     </a>
                 </li>
             </div>
-            </ul>
         </nav>
     </div>
-        @RenderBody()
+    <div id="toast-container" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>
+
+    @RenderBody()
     </div>
+
+    @await RenderSectionAsync("Scripts", required: false)
     <script type="module"
             src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule
             src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+
     <script>
         let menuToggle = document.querySelector(".menuToggle");
         let sideBar = document.querySelector(".sidebar");
@@ -98,6 +129,32 @@
             this.classList.add("active");
         }
         Menulist.forEach((item) => item.addEventListener("click", activeLink));
+
+        function showToast(title, message, iconClass, variant) {
+            const toastContainer = $('#toast-container');
+
+            const toastId = `toast-${Date.now()}`;
+
+            const toast = $(`
+                        <div id="${toastId}" class="toast bg-${variant} text-white border-0" role="alert" aria-live="assertive" aria-atomic="true" data-delay="5000">
+                            <div class="d-flex">
+                                <div class="toast-body">
+                                    <i class="${iconClass}"></i> ${title}: ${message}
+                                </div>
+                                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                        </div>
+                    `);
+
+            toastContainer.append(toast);
+
+            const toastElement = new bootstrap.Toast(toast[0], { delay: 5000 });
+            toastElement.show();
+
+            toast.on('hidden.bs.toast', function () {
+                $(this).remove();
+            });
+        }
     </script>
 
 </body>
