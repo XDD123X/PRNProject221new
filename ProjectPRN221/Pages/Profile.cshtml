@@ -5,7 +5,8 @@
     List<Course> courses = ViewData["courses"] as List<Course>;
     User user = ViewData["user"] as User;
     List<EnroledCourse> enroledCourses = ViewData["enroled_courses"] as List<EnroledCourse>;
-
+    List<float> points = ViewData["points"] as List<float>;
+    var errorMessage = ViewData["error"]?.ToString();
 }
 <style>
     body {
@@ -59,14 +60,14 @@
                     <h3 class="text-right">Profile Settings</h3>
                 </div>
                 <div class="row mt-3">
-                    <div class="col-md-12"><label class="labels">User Name</label><input type="text" class="form-control" placeholder="Enter username" value="@user.Username"></div>
+                    <div class="col-md-12"><label class="labels">User Name</label><input name="txtUsername" type="text" class="form-control" placeholder="Enter username" value="@user.Username"></div>
                     <div class="col-md-12"><label class="labels">Email</label><input type="email" class="form-control" placeholder="Enter email" value="@user.Email" readonly=""></div>
                     <div class="col-md-12"><label class="labels">Register Date</label><input type="text" class="form-control" placeholder="Register date" value="@user.CreatedAt"></div>
                     <div class="col-md-12"><label class="labels">Updated At</label><input type="text" class="form-control" placeholder="Updated At" value="@user.UpdatedAt"></div>
                 </div>
                 <div class="mt-5 text-center">
                     <button class="btn btn-primary profile-button" type="submit">Save Profile</button>
-                    <a class="btn btn-primary profile-button">Reset Password</a>
+                        <a asp-page="ResetPassword" class="btn btn-primary profile-button">Change Password</a>
                     </div>
             </div>
             </form>
@@ -81,12 +82,12 @@
                 </div>
                 @for (int i = 0; i < user.EnroledCourses.Count(); i++)
                 {
-                    <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3" style="margin-top: 10px">
                         <h4 class="text-right">@courses[i].Title</h4>
                     </div>
                     <div class="row mt-3">
                         <div class="col-md-12"><label class="labels">Teacher</label><input type="text" class="form-control" placeholder="Enter phone number" value="@courses[i].User.Username" readonly=""></div>
-                        <div class="col-md-12"><label class="labels">Your Source</label><input type="text" class="form-control" placeholder="Enter email" value="" readonly=""></div>
+                        <div class="col-md-12"><label class="labels">Your Source</label><input type="text" class="form-control" placeholder="Enter email" value="@points[i] / 10" readonly=""></div>
                         <div class="col-md-12"><label class="labels">Enrole Date</label><input type="text" class="form-control" placeholder="Password" value="@enroledCourses[i].CreatedAt" readonly=""></div>
                     </div>
                 }
@@ -95,3 +96,12 @@
         </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function () {
+        var errorMessage = "@errorMessage";
+        if (errorMessage) {
+            alert(errorMessage);
+        }
+    });
+</script>

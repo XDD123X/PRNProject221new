@@ -8,12 +8,6 @@ namespace ProjectPRN221.Pages.Authentication
 {
 	public class loginModel : PageModel
 	{
-		private IDistributedCache _cache;
-		public loginModel(IDistributedCache cache)
-		{
-			_cache = cache;
-		}
-
 		[BindProperty]
 		public string? txtPassword { get; set; }
 		[BindProperty]
@@ -50,7 +44,7 @@ namespace ProjectPRN221.Pages.Authentication
 			}
 
 
-			return Page();
+			return RedirectToPage("/Index");
 		}
 
 	}
