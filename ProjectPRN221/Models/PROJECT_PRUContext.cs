@@ -262,6 +262,14 @@ namespace ProjectPRN221.Models
                     .IsUnicode(false)
                     .HasColumnName("role");
 
+                entity.Property(e => e.CreatedAt)
+                   .HasColumnType("datetime")
+                   .HasColumnName("created_at");
+
+                entity.Property(e => e.UpdatedAt)
+                    .HasColumnType("datetime")
+                    .HasColumnName("updated_at");
+
                 entity.Property(e => e.Username)
                     .HasMaxLength(255)
                     .IsUnicode(false)

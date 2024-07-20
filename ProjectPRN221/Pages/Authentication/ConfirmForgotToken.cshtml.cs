@@ -103,6 +103,7 @@ namespace ProjectPRN221.Pages.Authentication
 					string hashPassword = BCrypt.Net.BCrypt.HashPassword(password);
 					Console.WriteLine("Hashpassword from *" + password + "* to *" + hashPassword + "*");
 					user.Password = hashPassword;
+					user.UpdatedAt = DateTime.Now;
 					EmailService.Send(txtEmail, "Your new password in PROJECT PRN:", "Your password is set to: " + password);
 					_context.Update(user);
 					_context.SaveChanges();
