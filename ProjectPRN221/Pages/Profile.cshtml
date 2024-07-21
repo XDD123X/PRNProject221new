@@ -6,6 +6,7 @@
     User user = ViewData["user"] as User;
     List<EnroledCourse> enroledCourses = ViewData["enroled_courses"] as List<EnroledCourse>;
     List<float> points = ViewData["points"] as List<float>;
+    List<int> enroleNum = ViewData["enroleNums"] as List<int>;
     var errorMessage = ViewData["error"]?.ToString();
 }
 <style>
@@ -80,17 +81,33 @@
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h3 class="text-right">Your Courses</h3>
                 </div>
-                @for (int i = 0; i < user.EnroledCourses.Count(); i++)
+                @if (user.Role == "Student")
                 {
-                    <div class="d-flex justify-content-between align-items-center mb-3" style="margin-top: 10px">
-                        <h4 class="text-right">@courses[i].Title</h4>
-                    </div>
-                    <div class="row mt-3">
-                        <div class="col-md-12"><label class="labels">Teacher</label><input type="text" class="form-control" placeholder="Enter phone number" value="@courses[i].User.Username" readonly=""></div>
-                        <div class="col-md-12"><label class="labels">Your Source</label><input type="text" class="form-control" placeholder="Enter email" value="@points[i] / 10" readonly=""></div>
-                        <div class="col-md-12"><label class="labels">Enrole Date</label><input type="text" class="form-control" placeholder="Password" value="@enroledCourses[i].CreatedAt" readonly=""></div>
-                    </div>
+                    @for (int i = 0; i < user.EnroledCourses.Count(); i++)
+                    {
+                        <div class="d-flex justify-content-between align-items-center mb-3" style="margin-top: 10px">
+                            <h4 class="text-right">@courses[i].Title</h4>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-12"><label class="labels">Teacher</label><input type="text" class="form-control" placeholder="Enter phone number" value="@courses[i].User.Username" readonly=""></div>
+                            <div class="col-md-12"><label class="labels">Your Source</label><input type="text" class="form-control" placeholder="Enter email" value="@points[i] / 10" readonly=""></div>
+                            <div class="col-md-12"><label class="labels">Enrole Date</label><input type="text" class="form-control" placeholder="Password" value="@enroledCourses[i].CreatedAt" readonly=""></div>
+                        </div>
+                    }
+                } else
+                {
+                    @for (int i = 0; i < courses.Count(); i++)
+                    {
+                        <div class="d-flex justify-content-between align-items-center mb-3" style="margin-top: 10px">
+                            <h4 class="text-right">@courses[i].Title</h4>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-12"><label class="labels">Created At</label><input type="text" class="form-control" placeholder="Enter phone number" value="@courses[i].CreatedAt" readonly=""></div>
+                            <div class="col-md-12"><label class="labels">Enrole Numbers</label><input type="text" class="form-control" placeholder="Enter email" value="@enroleNum[i]" readonly=""></div>
+                        </div>
+                    }
                 }
+
                 
             </div>
         </div>

@@ -22,23 +22,47 @@ namespace ProjectPRN221.Pages
                 {
                     var user = _context.Users.Include(t => t.EnroledCourses).FirstOrDefault(t => t.Id == userId);
                     ViewData["user"] = user;
-                    List<float> coursePoints = new List<float>();
+                    if(user.Role == "Student")
+                    {
+						List<float> coursePoints = new List<float>();
 
-                    List<Course> courses = new List<Course>();
-                    foreach(EnroledCourse e in user.EnroledCourses){
-                        Course course = _context.Courses.Include(t => t.User).FirstOrDefault(x => x.Id == e.CourseId);
-                        if(course != null)
-                        {
-							courses.Add(course);
-							coursePoints.Add(getPoint(userId, course.Id));
+						List<Course> courses = new List<Course>();
+						foreach (EnroledCourse e in user.EnroledCourses)
+						{
+							Course course = _context.Courses.Include(t => t.User).FirstOrDefault(x => x.Id == e.CourseId);
+							if (course != null)
+							{
+								courses.Add(course);
+								coursePoints.Add(getPoint(userId, course.Id));
+							}
+
 						}
-                        
-                    }
 
-                    List<EnroledCourse> enroledCourses = user.EnroledCourses.ToList();
-                    ViewData["points"] = coursePoints;
-                    ViewData["courses"] = courses;
-                    ViewData["enroled_courses"] = enroledCourses;
+						List<EnroledCourse> enroledCourses = user.EnroledCourses.ToList();
+						ViewData["points"] = coursePoints;
+						ViewData["courses"] = courses;
+						ViewData["enroled_courses"] = enroledCourses;
+					} else
+                    {
+                        List<Course> courses = _context.Courses.Where(t => t.UserId == userId).ToList();
+                        List<int> enroleNums = new List<int>();
+                        foreach(var course in courses)
+                        {
+                            var list = _context.EnroledCourses.Where(t => t.CourseId == course.Id).ToList();
+                            if (list.Any())
+                            {
+                                enroleNums.Add(list.Count);
+                            } else
+                            {
+                                enroleNums.Add(0);
+                            }
+                        }
+
+                        ViewData["enroleNums"] = enroleNums;
+						ViewData["courses"] = courses;
+                        
+					}
+                    
                 }
 				return Page();
             }
