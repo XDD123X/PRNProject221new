@@ -19,6 +19,8 @@ CREATE TABLE users (
     [password] varchar(255),
 	[role] varchar(100),
 	[username] varchar(255),
+	[created_at] DATETIME,
+	[updated] DATETIME,
 	is_deleted bit
 );
 
