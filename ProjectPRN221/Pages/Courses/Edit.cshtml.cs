@@ -16,52 +16,61 @@ namespace ProjectPRN221.Pages.Courses
         private readonly ProjectPRN221.Models.PROJECT_PRUContext _context = new PROJECT_PRUContext();
 
         [BindProperty]
-        public Course Course { get; set; } = default!;
-        public User currUser { get; set; } = default!;
+        public Course? Course { get; set; } = default!;
+        public User? currUser { get; set; } = default!;
+        public string? ErrorMessage { get; set; } = default;
 
 
         public async Task<IActionResult> OnGetAsync(long? id)
         {
-            string currUserID = HttpContext.Session.GetString("Session_User");
-            if (currUserID == null || currUserID == "")
+            //string? currUserID = HttpContext.Session.GetString("Session_User");
+            //if (currUserID == null || currUserID == "")
+            //{
+            //    return RedirectToPage("/Authentication/login");
+            //}
+            //else
+            //{
+            //    currUser = _context.Users.FirstOrDefault(c => c.Id == Int32.Parse(currUserID));
+            //}
+            var course = await _context.Courses
+                .Include(c => c.Explodes)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (course == null)
             {
-                return RedirectToPage("/Authentication/login");
+                return NotFound();
+            }
+            currUser = _context.Users.FirstOrDefault(u => u.Id == 8);
+            if (currUser.Role.Equals("Lecture") && currUser.Id == course.UserId)
+            {
+                Course = course;
+                return Page();
             }
             else
             {
-                currUser = _context.Users.FirstOrDefault(c => c.Id == Int32.Parse(currUserID));
+                ErrorMessage = "You do not have permission to edit this course.";
+                return Page();
             }
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            Course = await _context.Courses
-                .Include(c => c.Explodes)
-                .FirstOrDefaultAsync(m => m.Id == id);
-
-            if (Course == null)
-            {
-                return NotFound();
-            }
-
-            return Page();
         }
 
         public async Task<IActionResult> OnPostAsync(long? id)
         {
-            string currUserID = HttpContext.Session.GetString("Session_User");
-            if (currUserID == null || currUserID == "")
+            //string? currUserID = HttpContext.Session.GetString("Session_User");
+            //if (currUserID == null || currUserID == "")
+            //{
+            //    return RedirectToPage("/Authentication/login");
+            //}
+            //else
+            //{
+            //    currUser = _context.Users.FirstOrDefault(c => c.Id == Int32.Parse(currUserID));
+            //}
+            currUser = new User()
             {
-                return RedirectToPage("/Authentication/login");
-            }
-            else
-            {
-                currUser = _context.Users.FirstOrDefault(c => c.Id == Int32.Parse(currUserID));
-            }
+                Id = 8,
+                Role = "Lecture"
+            };
             if (!ModelState.IsValid)
             {
-                return Page();
+                return RedirectToPage("./Edit", new { id = id });
             }
             var course = await _context.Courses.FindAsync(id);
             if (course != null)
@@ -71,27 +80,26 @@ namespace ProjectPRN221.Pages.Courses
                     course.Title = Course.Title;
                     course.Thumbnail = Course.Thumbnail;
                     course.Description = Course.Description;
+                    course.UpdatedAt = DateTime.Now;
 
                     _context.Update(course);
                     await _context.SaveChangesAsync();
-
-
                 }
             }
-            return Page();
+            return RedirectToPage("./Details", new { id = id });
         }
 
         public async Task<IActionResult> OnPostDeleteAsync(long? id)
         {
-            string currUserID = HttpContext.Session.GetString("Session_User");
-            if (currUserID == null || currUserID == "")
-            {
-                return RedirectToPage("/Authentication/login");
-            }
-            else
-            {
-                currUser = _context.Users.FirstOrDefault(c => c.Id == Int32.Parse(currUserID));
-            }
+            //string? currUserID = HttpContext.Session.GetString("Session_User");
+            //if (currUserID == null || currUserID == "")
+            //{
+            //    return RedirectToPage("/Authentication/login");
+            //}
+            //else
+            //{
+            //    currUser = _context.Users.FirstOrDefault(c => c.Id == Int32.Parse(currUserID));
+            //}
 
             if (id == null || _context.Courses == null)
             {
@@ -110,6 +118,30 @@ namespace ProjectPRN221.Pages.Courses
             }
 
             return RedirectToPage("./Index");
+        }
+
+        public async Task<IActionResult> OnPostDeleteExplodeAsync(long explodeId)
+        {
+            //string? currUserID = HttpContext.Session.GetString("Session_User");
+            //if (currUserID == null || currUserID == "")
+            //{
+            //    return RedirectToPage("/Authentication/login");
+            //}
+            //else
+            //{
+            //    currUser = _context.Users.FirstOrDefault(c => c.Id == Int32.Parse(currUserID));
+            //}
+            var explode = await _context.Explodes.FindAsync(explodeId);
+            if (explode != null)
+            {
+                var course = await _context.Courses.FindAsync(explode.CourseId);
+                if (course != null && currUser.Role.Equals("Lecture") && currUser.Id == course.UserId)
+                {
+                    _context.Explodes.Remove(explode);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            return Page();
         }
 
         private bool CourseExists(long id)

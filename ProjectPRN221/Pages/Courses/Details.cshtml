@@ -32,7 +32,6 @@
     </div>
 </section>
 <section style="margin-top:-21.5rem">
-
     <div class="container">
         <div class="row">
             <div class="col-md-8">
@@ -52,7 +51,6 @@
                                 <div id="content-@explode.Id" style="display:none;">
                                     <p>@explode.Content</p>
                                 </div>
-
                             </li>
                         }
                         else
@@ -64,13 +62,22 @@
                         }
                     }
                 </ul>
+                @if (Model.isEndrolled)
+                {
+                    <h1>Quizz</h1>
+                    <ul class="list-unstyled">
+                        
+                        // trang lam bai
+
+                    </ul>
+                }
             </div>
             <div class="col-md-4">
                 <div class="card">
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item">Enrolled : @Model.Enrolled Student</li>
-                        <li class="list-group-item">Duration : @Model.Duration explode</li>
-                        <li class="list-group-item">Categories : @Model.Course.Categories</li>
+                        <li class="list-group-item">Enrolled: @Model.Enrolled Student</li>
+                        <li class="list-group-item">Duration: @Model.Duration explode</li>
+                        <li class="list-group-item">Categories: @Model.Course.Categories</li>
                         <li class="list-group-item text-center">
                             <img src="~/img/gallery/searching.png" width="78" alt="..." />
                             <p class="text-muted mb-0 mt-4">Contact a customer support at</p><a class="text-info" href="mailto:@Model.Lecture.Email">@Model.Lecture.Email</a>
@@ -83,7 +90,6 @@
 </section>
 
 <section class="pt-0">
-
     <div class="container">
         <div class="row h-100 align-items-center">
             <div class="col-md-12 col-lg-6 h-100">
@@ -126,6 +132,12 @@
             <div class="col-md-6 col-lg-5">
                 <h5 class="text-primary font-sans-serif fw-bold">Enroll now</h5>
                 <h1 class="mb-5">Get every single<br />update you will get</h1>
+                @if (TempData["Message"] != null)
+                {
+                    <div class="alert alert-info">
+                        @TempData["Message"]
+                    </div>
+                }
                 @if (Model.currUser != null)
                 {
                     @if (Model.currUser.Role.Equals("Student"))
@@ -138,7 +150,9 @@
                         }
                         else
                         {
-                            <h5 class="text-primary font-sans-serif fw-bold">resume course</h5>
+                            <form method="post" asp-page-handler="Unenroll" asp-route-uid="@Model.currUser.Id" asp-route-cid="@Model.Course.Id">
+                                <button type="submit" class="btn btn-danger">Unenroll</button>
+                            </form>
                         }
                     }
                 }
@@ -146,7 +160,6 @@
                 {
                     <a asp-page="/Authentication/login" class="btn btn-primary me-2">Log in to Enroll</a>
                 }
-
             </div>
         </div>
     </div>
