@@ -100,6 +100,7 @@ namespace ProjectPRN221.Pages.Authentication
 					Password = BCrypt.Net.BCrypt.HashPassword(txtPassword),
 					Role = sltRole,
 					Username = txtUsername,
+					CreatedAt = DateTime.Now,
 					IsDeleted = true,
 				};
 
