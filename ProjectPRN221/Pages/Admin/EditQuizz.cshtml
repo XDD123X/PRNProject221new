@@ -113,9 +113,21 @@
     .menuToggle {
         position: fixed;
     }
+
     .IsDeleted {
         background-color: gray !important;
+        text-align: center;
     }
+
+    #searchingBox {
+        margin-top: 5px;
+    }
+
+        #searchingBox input,
+        #searchingBox select,
+        #searchingBox label {
+            margin: 0 5px;
+        }
 </style>
 
 <div class="content">
@@ -123,15 +135,24 @@
     <div class="header">
         <h2>@courseTitle's quizzes table</h2>
     </div>
+    <div style="display:flex; flex-direction: row-reverse;">
+        <div class="icon">
+            <img src="https://www.svgrepo.com/show/522232/plus-square.svg" witdh="64" height="64" onclick="Create()" />
+        </div>
+    </div>
+    <div id="searchingBox" style="display:flex; flex-direction: row-reverse; margin-right:5px;">
+        <select name="sortBy" id="sortBy" onchange="updateSortBy()">
+            <option value="IDASC">Sắp xếp theo id ( Tăng )</option>
+            <option value="IDDESC">Sắp xếp theo id ( Giảm )</option>
+        </select>
+        <input type="text" name="search" id="search" onkeyup="updateTitleSearching()" />
+    </div>
     <div class="table-container">
         <table class="styled-table">
             <thead>
-                <tr>
+                <tr style="text-align:center;">
                     <th>
                         ID
-                    </th>
-                    <th>
-                        Course title
                     </th>
                     <th>
                         Question
@@ -221,7 +242,13 @@
                     </div>
                     <div class="form-group">
                         <label for="quizzAnswer">Correct answer (1-4)</label>
-                        <input type="text" class="form-control" id="quizzAnswer">
+                        <select class="form-control" id="quizzAnswer">
+                            <option value="1">Lựa chọn 1</option>
+                            <option value="2">Lựa chọn 2</option>
+                            <option value="3">Lựa chọn 3</option>
+                            <option value="4">Lựa chọn 4</option>
+                        </select>
+                        @* <input type="text" class="form-control" id="quizzAnswer"> *@
                     </div>
                     <div class="form-group d-flex align-items-center" style="justify-content: space-evenly;">
                         <div class="form-group">
@@ -233,7 +260,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="TryEdit()">Save changes</button>
+                <button type="button" class="btn btn-primary" id="SaveButton">Save changes</button>
             </div>
         </div>
     </div>
@@ -241,8 +268,70 @@
 
 <script>
     let pageNumber = 1;
-    const maximumPaginationPage = @getMaximumPagination;
+    let maximumPaginationPage = @getMaximumPagination;
+    const courseTitle = "@courseTitle.ToString()";
     let listOfQuizz;
+
+    // Sort part
+    let sortBy = "";
+    let titleSearching = "";
+    // =========
+
+   function updateMaxpage(msg) {
+        $.ajax({
+            url: 'EditQuizz/MaxPage',
+            type: 'GET',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("XSRF-TOKEN",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+            },
+            success: function (response) {
+                maximumPaginationPage = parseInt(response);
+
+                if (maximumPaginationPage > $("#pageSelect option").length) {
+                    $("#pageSelect").empty();
+                    for (let i = 1; i <= maximumPaginationPage; i++) {
+
+                        var option = $('<option></option>')
+                            .val(i)
+                            .text('Page ' + i);
+                        $("#pageSelect").append(option);
+                    }
+                    // console.log(msg);
+                    // if (msg == "lastPage") {
+                    //     console.log($("#pageSelect option").length);
+                    //     pageNumber = parseInt(response);
+                    //     console.log(pageNumber);
+                    //     $("#pageSelect").prop('selectedIndex', pageNumber);
+                    //     loadPage();
+                    //     return;
+                    // }
+                }
+
+                if (msg != "lastPage") {
+                    $("#pageSelect").prop('selectedIndex', pageNumber - 1);
+                } else {
+                    pageNumber = maximumPaginationPage;
+                    $("#pageSelect").prop('selectedIndex', pageNumber - 1);
+                    loadPage();
+                }
+
+
+            }, error: function (error) {
+                showToast("Lấy số lượng page tối đa thất bại", error, "bi bi-exclamation-triangle", "danger");
+            }
+        });
+    }
+
+    function updateTitleSearching() {
+        titleSearching = $.trim($("#search").val());
+        move("first");
+    }
+
+    function updateSortBy() {
+        sortBy = $("#sortBy").val();
+        move("first");
+    }
 
     document.addEventListener("DOMContentLoaded", function () {
 
@@ -251,6 +340,30 @@
         const liElement = document.querySelector(".Courses");
         liElement.classList.toggle("active");
     });
+
+
+    function validateData() {
+        if ($.trim($("#quizzQuestion").val()) == "") {
+            showToast("Thông báo", "Thiếu câu hỏi", "bi bi-exclamation-triangle", "danger");
+            return false;
+        } else if ($.trim($("#quizzOption1").val()) == "") {
+            showToast("Thông báo", "Thiếu đáp án 1", "bi bi-exclamation-triangle", "danger");
+            return false;
+        } else if ($.trim($("#quizzOption2").val()) == "") {
+            showToast("Thông báo", "Thiếu đáp án 2", "bi bi-exclamation-triangle", "danger");
+            return false;
+        } else if ($.trim($("#quizzOption3").val()) == "") {
+            showToast("Thông báo", "Thiếu đáp án 3", "bi bi-exclamation-triangle", "danger");
+            return false;
+        } else if ($.trim($("#quizzOption4").val()) == "") {
+            showToast("Thông báo", "Thiếu đáp án 4", "bi bi-exclamation-triangle", "danger");
+            return false;
+        } else if ($.trim($("#quizzAnswer").val()) == "") {
+            showToast("Thông báo", "Thiếu đáp án chuẩn", "bi bi-exclamation-triangle", "danger");
+            return false;
+        }
+        return true;
+    }
 
     function selectPage() {
         const selectedOption = document.getElementById("pageSelect").selectedIndex;
@@ -284,19 +397,29 @@
                 }
                 break;
             }
+
             case 'last': {
-                pageNumber = maximumPaginationPage;
-                document.getElementById("pageSelect").selectedIndex = document.getElementById("pageSelect").options.length - 1;
-                loadPage();
+                updateMaxpage("lastPage");
                 break;
             }
         }
     }
+
+    function escapeHtml(unsafe) {
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
     function loadPage() {
         $.ajax({
-            url: `EditQuizz/Page?index=${pageNumber}&courseId=@courseId`,
+            url: `EditQuizz/Page?index=${pageNumber}&courseId=@courseId&search=${titleSearching}&sortBy=${sortBy}`,
             type: 'GET',
             success: function (data) {
+                updateMaxpage();
 
                 const tableBody = $('#tableBody');
                 tableBody.empty();
@@ -307,16 +430,15 @@
                 for (const quizz of data) {
                     count++;
 
-                    let row = $('<tr>');
+                    let row = $('<tr style="text-align:center;">');
 
                     if (quizz.isDeleted) {
                         row = $('<tr class="IsDeleted">');
                     }
 
-                    row.append('<td>' + quizz["id"] + '</td>');
-                    row.append('<td>' + quizz["courseName"] + '</td>');
-                    row.append('<td>' + quizz["question"] + '</td>');
-                    row.append('<td>' + quizz["answer"] + '</td>');
+                    row.append('<td>' + escapeHtml(String(quizz["id"])) + '</td>');
+                    row.append('<td>' + escapeHtml(String(quizz["question"])) + '</td>');
+                    row.append('<td>' + escapeHtml(String(quizz["answer"])) + '</td>');
 
                     const actionCell = $('<td>');
                     actionCell.addClass('action');
@@ -332,7 +454,6 @@
                     newRow.append('<td>\u00A0</td>');
                     newRow.append('<td>\u00A0</td>');
                     newRow.append('<td>\u00A0</td>');
-                    newRow.append('<td>\u00A0</td>');
                     tableBody.append(newRow);
                 }
             },
@@ -344,6 +465,7 @@
     }
 
     function TryEdit() {
+        if (!validateData()) return;
         const cauHoi = {
             id: document.getElementById('quizzId').value,
             question: document.getElementById('quizzQuestion').value,
@@ -384,7 +506,6 @@
         return `${year}-${month}-${day}`;
     }
 
-
     function Edit(quizzId) {
         const quizz = listOfQuizz.find(c => c.id == quizzId);
         if (quizz) {
@@ -398,10 +519,64 @@
             $('#quizzAnswer').val(quizz.answer);
 
             $('#quizzIsDeleted').prop('checked', quizz.isDeleted);
-
+            $('#SaveButton').off('click').on('click', function () {
+                TryEdit();
+            }).text("Save change");
             $('#quizzModal').modal('show');
         }
     }
+
+    function Create() {
+        $('#quizzId').val("");
+        $('#quizzCourseTitle').val(courseTitle);
+        $('#quizzQuestion').val("");
+        $('#quizzOption1').val("");
+        $('#quizzOption2').val("");
+        $('#quizzOption3').val("");
+        $('#quizzOption4').val("");
+        $('#quizzAnswer').val("");
+
+        $('#quizzIsDeleted').prop('checked', false);
+        $('#SaveButton').off('click').on('click', function () {
+            TryCreate();
+        }).text("Create");
+        $('#quizzModal').modal('show');
+    }
+
+    function TryCreate() {
+        if (!validateData()) return;
+        const cauHoi = {
+            question: document.getElementById('quizzQuestion').value,
+            option1: document.getElementById('quizzOption1').value,
+            option2: document.getElementById('quizzOption2').value,
+            option3: document.getElementById('quizzOption3').value,
+            option4: document.getElementById('quizzOption4').value,
+            answer: document.getElementById('quizzAnswer').value,
+            isDeleted: document.getElementById('quizzIsDeleted').checked,
+            courseId: @courseId
+            };
+
+        $.ajax({
+            url: 'EditQuizz/Create',
+            type: 'POST',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("XSRF-TOKEN",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+            },
+            data: {
+                quiz: cauHoi
+            },
+            success: function (response) {
+                showToast("Thông báo", "Tạo câu hỏi thành công", "bi bi-check-square", "success");
+                loadPage();
+            }, error: function (error) {
+                showToast("Tạo không thành công", error, "bi bi-exclamation-triangle", "danger");
+            }
+        });
+
+        $('#quizzModal').modal('hide');
+    }
+
 
     $(document).ready(function () {
         loadPage();

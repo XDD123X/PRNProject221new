@@ -21,6 +21,7 @@ namespace ProjectPRN221.Pages.Assignment
             // Check if course is exist and user was enroll on that course
             Course course = DBContext.Courses.Include(p => p.Quizzes).FirstOrDefault(p => p.Id == CourseID);
             EnroledCourse ec = DBContext.EnroledCourses.FirstOrDefault(p => p.CourseId == CourseID &&  p.UserId == UserID);
+            
             if (course == null || ec == null)
             {
                 return RedirectToPage("/Courses/Index");

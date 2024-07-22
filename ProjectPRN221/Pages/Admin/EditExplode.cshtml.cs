@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Caching.Distributed;
 using Org.BouncyCastle.Utilities.Bzip2;
 using ProjectPRN221.Models;
@@ -11,7 +12,7 @@ namespace ProjectPRN221.Pages.Admin
     public class EditExplodeModel : PageModel
     {
         private readonly int RecordPerPage = 5;
-        private int maxPage;
+        public static int maxPage;
 
         private readonly PROJECT_PRUContext dbcontext = new PROJECT_PRUContext();
         private readonly IDistributedCache _cache;
@@ -38,14 +39,12 @@ namespace ProjectPRN221.Pages.Admin
 
             return Page();
         }
-        public IActionResult OnGetPage(int index, int courseId)
+        public IActionResult OnGetPage(int index, int courseId, string title, string sortBy)
         {
             int skip = (index - 1) * RecordPerPage;
 
             var explodes = dbcontext.Explodes.Where(p => p.CourseId == courseId)
                                                       .OrderBy(c => c.Id)
-                                                      .Skip(skip)
-                                                      .Take(RecordPerPage)
                                                       .Include(p => p.Course)
                                                       .Select(c => new
                                                       {
@@ -53,10 +52,24 @@ namespace ProjectPRN221.Pages.Admin
                                                           CourseName = c.Course.Title,
                                                           Content = c.Content,
                                                           Title = c.Title,
-                                                          IsDeleted = c.IsDeleted
+                                                          IsDeleted = c.IsDeleted,
+                                                          Video = c.Video
                                                       })
                                                       .ToList();
 
+            if (title != null)
+            {
+                explodes = explodes.Where(p => p.Title.ToLower().Contains(title.ToLower())).ToList();
+            }
+
+            if (sortBy != null && sortBy.Equals("IDDESC")) {
+                explodes.Reverse();
+            }
+
+            maxPage = explodes.Count() / RecordPerPage;
+            if (explodes.Count() % RecordPerPage != 0) maxPage++;
+
+            explodes = explodes.Skip(skip).Take(RecordPerPage).ToList();
             return new JsonResult(explodes);
         }
 
@@ -70,6 +83,7 @@ namespace ProjectPRN221.Pages.Admin
                     e.Title = explode.Title;
                     e.Content = explode.Content;
                     e.IsDeleted = explode.IsDeleted;
+                    e.Video = explode.Video;
 
                     dbcontext.Update(e);
                     dbcontext.SaveChanges();
@@ -83,6 +97,23 @@ namespace ProjectPRN221.Pages.Admin
             {
                 return new JsonResult(new { success = false });
 
+            }
+            return new JsonResult(new { success = true });
+        }
+        public IActionResult OnGetMaxpage()
+        {
+            return new JsonResult(maxPage);
+        }
+        public IActionResult OnPostCreate(Explode explode)
+        {
+            try
+            {
+                dbcontext.Explodes.Add(explode);
+                dbcontext.SaveChanges();
+            }
+            catch
+            {
+                return new JsonResult(new { success = false });
             }
             return new JsonResult(new { success = true });
         }

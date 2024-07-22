@@ -7,6 +7,7 @@
 @{
     int getMaximumPagination = (int)ViewData["MaxPage"];
     int recordPerPage = (int)ViewData["recordPerPage"];
+    List<String> categories = ViewData["categories"] as List<String>;
 }
 <style>
     .table-container {
@@ -115,9 +116,21 @@
     .CourseIcon {
         max-width: 256px !important;
     }
+
     .IsDeleted {
         background-color: gray !important;
+        text-align: center;
     }
+
+    #searchingBox {
+        margin-top: 5px;
+    }
+
+        #searchingBox input,
+        #searchingBox select,
+        #searchingBox label {
+            margin: 0 5px;
+        }
 </style>
 
 <div class="content">
@@ -125,10 +138,34 @@
     <div class="header">
         <h2>Courses table</h2>
     </div>
+    <div style="display:flex; flex-direction: row-reverse;">
+        <div class="icon">
+            <img src="https://www.svgrepo.com/show/522232/plus-square.svg" witdh="64" height="64" onclick="Create()" />
+        </div>
+    </div>
+    <div id="searchingBox" style="display:flex; flex-direction: row-reverse; margin-right:5px;">
+        <select name="sortBy" id="sortBy" onchange="updateSortBy()">
+            <option value="IDASC">Sắp xếp theo id ( Tăng )</option>
+            <option value="IDDESC">Sắp xếp theo id ( Giảm )</option>
+            <option value="CreatedDateASC">Sắp xếp theo ngày tạo ( Tăng )</option>
+            <option value="CreatedDateDESC">Sắp xếp theo ngày tạo ( Giảm )</option>
+            <option value="UpdatedDateASC">Sắp xếp theo ngày cập nhập ( Tăng )</option>
+            <option value="UpdatedDateDESC">Sắp xếp theo ngày cập nhập ( Giảm )</option>
+        </select>
+        <select name="category" id="category" onchange="updateCategory()">
+            <option value="ALL">Tất cả</option>
+            @foreach (String s in categories)
+            {
+                <option value="@s">@s</option>
+            }
+        </select>
+        <label for="category">Loại</label>
+        <input type="text" name="search" id="search" onkeyup="updateTitleSearching()" />
+    </div>
     <div class="table-container">
         <table class="styled-table">
             <thead>
-                <tr>
+                <tr style="text-align:center;">
                     <th>
                         ID
                     </th>
@@ -141,6 +178,14 @@
                     <th>
                         Thumbnail
                     </th>
+                    <th>
+                        Created Date
+                    </th>
+
+                    <th>
+                        Updated Date
+                    </th>
+
 
                     <th class="action">Action</th>
 
@@ -226,11 +271,11 @@
                         <label for="coursePrice">Price</label>
                         <input type="number" class="form-control" id="coursePrice" step="0.01">
                     </div>
-                    <div class="form-group">
+                    <div id="CreatedDateDiv" class="form-group">
                         <label for="courseCreatedAt">Created date</label>
                         <input type="date" class="form-control" id="courseCreatedAt">
                     </div>
-                    <div class="form-group">
+                    <div id="UpdatedDateDiv" class="form-group">
                         <label for="courseUpdatedAt">Updated date</label>
                         <input type="date" class="form-control" id="courseUpdatedAt">
                     </div>
@@ -252,7 +297,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="TryEdit()">Save changes</button>
+                <button type="button" class="btn btn-primary" id="SaveButton">Save changes</button>
             </div>
         </div>
     </div>
@@ -260,8 +305,14 @@
 
 <script>
     let pageNumber = 1;
-    const maximumPaginationPage = @getMaximumPagination;
+    let maximumPaginationPage = @getMaximumPagination;
     let listOfCourse;
+
+    // This is part of searching
+    let categorySearch = "";
+    let titleSearch = "";
+    let orderBy = "";
+    // =========================
 
     document.addEventListener("DOMContentLoaded", function () {
 
@@ -276,6 +327,80 @@
         const selectedValue = document.getElementById("pageSelect").options[selectedOption].value;
         pageNumber = selectedValue;
         loadPage();
+    }
+
+    function updateMaxpage(msg) {
+        $.ajax({
+            url: 'Courses/MaxPage',
+            type: 'GET',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("XSRF-TOKEN",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+            },
+            success: function (response) {
+                maximumPaginationPage = parseInt(response);
+
+                if (maximumPaginationPage > $("#pageSelect option").length) {
+                    $("#pageSelect").empty();
+                    for (let i = 1; i <= maximumPaginationPage; i++) {
+
+                        var option = $('<option></option>')
+                            .val(i)
+                            .text('Page ' + i);
+                        $("#pageSelect").append(option);
+                    }
+                }
+
+                if (msg != "lastPage") {
+                    $("#pageSelect").prop('selectedIndex', pageNumber - 1);
+                } else {
+                    pageNumber = maximumPaginationPage;
+                    $("#pageSelect").prop('selectedIndex', pageNumber - 1);
+                    loadPage();
+                }
+
+            }, error: function (error) {
+                showToast("Lấy số lượng page tối đa thất bại", error, "bi bi-exclamation-triangle", "danger");
+            }
+        });
+    }
+
+    function updateCategory() {
+
+        categorySearch = $("#category").val();
+        if (categorySearch == "ALL") categorySearch = "";
+        move("first");
+    }
+
+    function updateTitleSearching() {
+        categorySearch = $.trim($("#search").val());
+        move("first");
+    }
+
+    function updateSortBy() {
+        orderBy = $("#sortBy").val();
+        pageNumber = 1;
+        loadPage();
+    }
+
+    function validateData() {
+        if ($.trim($("#courseTitle").val()) == "") {
+            showToast("Thông báo", "Thiếu tiêu đề của khóa học", "bi bi-exclamation-triangle", "danger");
+            return false;
+        } else if ($.trim($("#courseUserId").val()) == "") {
+            showToast("Thông báo", "Thiếu người tạo ", "bi bi-exclamation-triangle", "danger");
+            return false;
+        } else if ($.trim($("#courseThumbnail").val()) == "") {
+            showToast("Thông báo", "Thiếu ảnh của khóa học", "bi bi-exclamation-triangle", "danger");
+            return false;
+        } else if ($.trim($("#courseCategories").val()) == "") {
+            showToast("Thông báo", "Thiếu loại của khóa học", "bi bi-exclamation-triangle", "danger");
+            return false;
+        } else if ($.trim($("#coursePrice").val()) == "") {
+            showToast("Thông báo", "Thiếu giá của khóa học", "bi bi-exclamation-triangle", "danger");
+            return false;
+        }
+        return true;
     }
 
     function move(page) {
@@ -304,18 +429,31 @@
                 break;
             }
             case 'last': {
-                pageNumber = maximumPaginationPage;
-                document.getElementById("pageSelect").selectedIndex = document.getElementById("pageSelect").options.length - 1;
-                loadPage();
+                updateMaxpage("lastPage");
+             
                 break;
             }
         }
     }
+
+
+    function escapeHtml(unsafe) {
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    
     function loadPage() {
         $.ajax({
-            url: `Courses/Page?index=${pageNumber}`,
+            url: `Courses/Page?index=${pageNumber}&category=${categorySearch}&sortBy=${orderBy}&title=${titleSearch}`,
             type: 'GET',
             success: function (data) {
+
+                updateMaxpage();
 
                 const tableBody = $('#tableBody');
                 tableBody.empty();
@@ -326,15 +464,17 @@
                 for (const course of data) {
                     count++;
 
-                    let row = $('<tr>');
+                    let row = $('<tr style="text-align:center;">');
 
                     if (course.isDeleted) {
                         row = $('<tr class="IsDeleted">');
                     }
                     row.append('<td>' + course["id"] + '</td>');
-                    row.append('<td>' + course["creator"] + '</td>');
-                    row.append('<td>' + course["title"] + '</td>');
-                    row.append('<img class="CourseIcon" src="' + course["thumbnail"] + '"></img>');
+                    row.append('<td>' + escapeHtml(String(course["creator"])) + '</td>');
+                    row.append('<td>' + escapeHtml(String(course["title"])) + '</td>');
+                    row.append('<img class="CourseIcon" src="' + escapeHtml(String(course["thumbnail"])) + '"></img>');
+                    row.append('<td>' + course["createdDate"] + '</td>');
+                    row.append('<td>' + course["updateDate"] + '</td>');
 
                     const actionCell = $('<td>');
                     actionCell.addClass('action');
@@ -351,6 +491,8 @@
                     newRow.append('<td>\u00A0</td>');
                     newRow.append('<td>\u00A0</td>');
                     newRow.append('<td>\u00A0</td>');
+                    newRow.append('<td>\u00A0</td>');
+                    newRow.append('<td>\u00A0</td>');
                     tableBody.append(newRow);
                 }
             },
@@ -362,6 +504,9 @@
     }
 
     function TryEdit() {
+        if (!validateData()) {
+            return;
+        }
         const khoaHoc = {
             id: document.getElementById('courseId').value,
             title: document.getElementById('courseTitle').value,
@@ -397,41 +542,144 @@
     }
 
     function formatDateForInput(dateStr) {
-        const date = new Date(dateStr);
-        const year = date.getFullYear();
-        const month = ('0' + (date.getMonth() + 1)).slice(-2);
-        const day = ('0' + date.getDate()).slice(-2);
-        return `${year}-${month}-${day}`;
+
+        let parts = dateStr.split('/');
+
+        let day = parseInt(parts[0]);
+        let month = parseInt(parts[1]);
+        let year = parseInt(parts[2]);
+
+        let sDay = (day < 10 ? "0" + day : day);
+        let sMonth = (month < 10 ? "0" + month : month);
+
+        return `${year}-${sMonth}-${sDay}`;
     }
 
-
     function Edit(courseId) {
-
         const course = listOfCourse.find(c => c.id == courseId);
+
         if (course) {
-            $('#courseId').val(course.id);
-            $('#courseUserId').val(course.creator);
+            $('#courseId').val(course.id).prop("readonly", true);
+            var text = $('<input>', {
+                class: 'form-control',
+                id: 'courseUserId',
+                readonly: true,
+                value: course.creator
+            });
+            $('#courseUserId').replaceWith(text);
+
             $('#courseTitle').val(course.title);
             $('#courseThumbnail').val(course.thumbnail);
             $('#courseCategories').val(course.category);
             $('#courseDescription').val(course.description);
             $('#coursePrice').val(course.price);
-            $('#courseCreatedAt').val(formatDateForInput(course.createdDate));
-            $('#courseUpdatedAt').val(formatDateForInput(course.updateDate));
+            $('#UpdatedDateDiv').show();
+            $('#CreatedDateDiv').show();
+            $('#courseCreatedAt').val(formatDateForInput(course.createdDate)).prop("readonly", true);
+            $('#courseUpdatedAt').val(formatDateForInput(course.updateDate)).prop("readonly", true);
             $('#courseIsActived').prop('checked', course.isActive);
             $('#courseEnrolNums').val(course.totalLearner);
             $('#courseIsDeleted').prop('checked', course.isDeleted);
 
             $('#editQuizzIcon').off('click').on('click', function () {
                 Quizz(course.id);
-            });
+            }).show();
 
             $('#editExplodeIcon').off('click').on('click', function () {
                 Explode(course.id);
-            });
+            }).show();
+
+            $('#SaveButton').off('click').on('click', function () {
+                TryEdit();
+            }).text("Save change");
 
             $('#courseModal').modal('show');
         }
+    }
+
+    function Create() {
+
+        $.ajax({
+            url: `Courses/Author`,
+            type: 'GET',
+            success: function (data) {
+
+                $('#courseId').val("").prop("readonly", true);
+                var select = $('<select>', {
+                    class: 'form-control',
+                    id: 'courseUserId'
+                });
+                $.each(data, function (index, item) {
+                    var option = $('<option>', {
+                        value: item.id,
+                        text: item.username
+                    });
+                    select.append(option);
+                });
+                $('#courseUserId').replaceWith(select);
+
+                $('#courseTitle').val("");
+                $('#courseThumbnail').val("");
+                $('#courseCategories').val("");
+                $('#courseDescription').val("");
+                $('#coursePrice').val("");
+                $('#courseIsActived').prop('checked', true);
+                $('#courseEnrolNums').val("");
+                $('#courseIsDeleted').prop('checked', false);
+
+
+                $('#UpdatedDateDiv').hide();
+                $('#CreatedDateDiv').hide();
+
+                $('#editQuizzIcon').off('click').hide();
+                $('#editExplodeIcon').off('click').hide();
+                $('#SaveButton').off('click').on('click', function () {
+                    TryCreate();
+                }).text("Create");
+                $('#courseModal').modal('show');
+            },
+            error: function (error) {
+                console.error(error);
+                showToast("Lấy dữ liệu thất bại", error, "bi bi-exclamation-triangle", "danger");
+            }
+        });
+    }
+
+    function TryCreate() {
+        if (!validateData()) {
+            return;
+        }
+        const khoaHoc = {
+            id: document.getElementById('courseId').value,
+            userId: document.getElementById('courseUserId').value,
+            title: document.getElementById('courseTitle').value,
+            thumbnail: document.getElementById('courseThumbnail').value,
+            categories: document.getElementById('courseCategories').value,
+            description: document.getElementById('courseDescription').value,
+            price: parseFloat(document.getElementById('coursePrice').value),
+            isActived: document.getElementById('courseIsActived').checked,
+            isDeleted: document.getElementById('courseIsDeleted').checked
+        };
+
+        $.ajax({
+            url: 'Courses/Create',
+            type: 'POST',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("XSRF-TOKEN",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+            },
+            data: {
+                course: khoaHoc
+            },
+            success: function (response) {
+                showToast("Thông báo", "Tạo khóa học thành công", "bi bi-check-square", "success");
+                move("last");
+            }, error: function (error) {
+                showToast("Tạo không thành công", error, "bi bi-exclamation-triangle", "danger");
+            }
+        });
+
+        $('#courseModal').modal('hide');
     }
 
     function Quizz(courseId) {

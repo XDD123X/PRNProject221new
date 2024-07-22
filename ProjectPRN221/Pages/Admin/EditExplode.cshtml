@@ -116,7 +116,18 @@
 
     .IsDeleted {
         background-color: gray !important;
+        text-align: center;
     }
+
+    #searchingBox {
+        margin-top: 5px;
+    }
+
+        #searchingBox input,
+        #searchingBox select,
+        #searchingBox label {
+            margin: 0 5px;
+        }
 </style>
 
 <div class="content">
@@ -124,15 +135,26 @@
     <div class="header">
         <h2>@courseTitle's explodes table</h2>
     </div>
+
+    <div style="display:flex; flex-direction: row-reverse;">
+        <div class="icon">
+            <img src="https://www.svgrepo.com/show/522232/plus-square.svg" witdh="64" height="64" onclick="Create()" />
+        </div>
+    </div>
+    <div id="searchingBox" style="display:flex; flex-direction: row-reverse; margin-right:5px;">
+        <select name="sortBy" id="sortBy" onchange="updateSortBy()">
+            <option value="IDASC">Sắp xếp theo id ( Tăng )</option>
+            <option value="IDDESC">Sắp xếp theo id ( Giảm )</option>
+        </select>
+        <input type="text" name="search" id="search" onkeyup="updateTitleSearching()" />
+    </div>
+
     <div class="table-container">
         <table class="styled-table">
             <thead>
-                <tr>
+                <tr style="text-align:center;">
                     <th>
                         ID
-                    </th>
-                    <th>
-                        Course title
                     </th>
                     <th>
                         Explode title
@@ -225,7 +247,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="TryEdit()">Save changes</button>
+                <button type="button" class="btn btn-primary" id="saveButton">Save changes</button>
             </div>
         </div>
     </div>
@@ -233,8 +255,82 @@
 
 <script>
     let pageNumber = 1;
-    const maximumPaginationPage = @getMaximumPagination;
+    let maximumPaginationPage = @getMaximumPagination;
     let listOfExplode;
+    const courseTitle = "@courseTitle.ToString()";
+
+    // Sort part
+    let sortBy = "";
+    let titleSearching = "";
+    // =========
+
+    function updateMaxpage(msg) {
+        $.ajax({
+            url: 'EditExplode/MaxPage',
+            type: 'GET',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("XSRF-TOKEN",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+            },
+            success: function (response) {
+                maximumPaginationPage = parseInt(response);
+
+                if (maximumPaginationPage > $("#pageSelect option").length) {
+                    $("#pageSelect").empty();
+                    for (let i = 1; i <= maximumPaginationPage; i++) {
+
+                        var option = $('<option></option>')
+                            .val(i)
+                            .text('Page ' + i);
+                        $("#pageSelect").append(option);
+                    }
+                }
+
+                if (msg != "lastPage") {
+                    $("#pageSelect").prop('selectedIndex', pageNumber - 1);
+                } else {
+                    pageNumber = maximumPaginationPage;
+                    $("#pageSelect").prop('selectedIndex', pageNumber - 1);
+                    loadPage();
+                }
+
+
+            }, error: function (error) {
+                showToast("Lấy số lượng page tối đa thất bại", error, "bi bi-exclamation-triangle", "danger");
+            }
+        });
+    }
+
+
+    function updateTitleSearching() {
+        titleSearching = $.trim($("#search").val());
+        move("first");
+    }
+
+    function updateSortBy() {
+        sortBy = $("#sortBy").val();
+        move("first");
+    }
+
+    function escapeHtml(unsafe) {
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function validateData() {
+        if ($.trim($("#explodeTitle").val()) == "") {
+            showToast("Thông báo", "Thiếu tiêu đề bài học", "bi bi-exclamation-triangle", "danger");
+            return false;
+        } else if (($.trim($("#explodeContent").val()) == "") && ($.trim($("#explodeVideoId").val()) == "")) {
+            showToast("Thông báo", "Thiếu nội dung của bài học", "bi bi-exclamation-triangle", "danger");
+            return false;
+        }
+        return true;
+    }
 
     document.addEventListener("DOMContentLoaded", function () {
 
@@ -277,18 +373,18 @@
                 break;
             }
             case 'last': {
-                pageNumber = maximumPaginationPage;
-                document.getElementById("pageSelect").selectedIndex = document.getElementById("pageSelect").options.length - 1;
-                loadPage();
+                updateMaxpage("lastPage");
                 break;
             }
         }
     }
+
     function loadPage() {
         $.ajax({
-            url: `EditExplode/Page?index=${pageNumber}&courseId=@courseId`,
+            url: `EditExplode/Page?index=${pageNumber}&courseId=@courseId&title=${titleSearching}&sortBy=${sortBy}`,
             type: 'GET',
             success: function (data) {
+                updateMaxpage();
 
                 const tableBody = $('#tableBody');
                 tableBody.empty();
@@ -299,15 +395,15 @@
                 for (const explode of data) {
                     count++;
 
-                    let row = $('<tr>');
+                    let row = $('<tr style="text-align:center;">');
                     if (explode.isDeleted) {
                         row = $('<tr class="IsDeleted">');
                     }
-                    row.append('<td>' + explode["id"] + '</td>');
-                    row.append('<td>' + explode["courseName"] + '</td>');
-                    row.append('<td>' + explode["title"] + '</td>');
-                    row.append('<td>' + explode["content"] + '</td>');
-                    row.append('<td>' + explode["video"] + '</td>');
+
+                    row.append('<td>' + escapeHtml(String(explode["id"])) + '</td>');
+                    row.append('<td>' + escapeHtml(String(explode["title"])) + '</td>');
+                    row.append('<td>' + escapeHtml(String(explode["content"])) + '</td>');
+                    row.append('<td>' + escapeHtml(String(explode["video"])) + '</td>');
 
                     const actionCell = $('<td>');
                     actionCell.addClass('action');
@@ -324,7 +420,6 @@
                     newRow.append('<td>\u00A0</td>');
                     newRow.append('<td>\u00A0</td>');
                     newRow.append('<td>\u00A0</td>');
-                    newRow.append('<td>\u00A0</td>');
                     tableBody.append(newRow);
                 }
             },
@@ -336,11 +431,13 @@
     }
 
     function TryEdit() {
+        if (!validateData()) return;
+
         const tietHoc = {
             id: document.getElementById('explodeId').value,
             title: document.getElementById('explodeTitle').value,
             content: document.getElementById('explodeContent').value,
-            video: documentgetElementById('explodeVideoId').value,
+            video: document.getElementById('explodeVideoId').value,
             isDeleted: document.getElementById('explodeIsDeleted').checked
         };
 
@@ -365,14 +462,6 @@
         $('#explodeModal').modal('hide');
     }
 
-    function formatDateForInput(dateStr) {
-        const date = new Date(dateStr);
-        const year = date.getFullYear();
-        const month = ('0' + (date.getMonth() + 1)).slice(-2);
-        const day = ('0' + date.getDate()).slice(-2);
-        return `${year}-${month}-${day}`;
-    }
-
 
     function Edit(explodeId) {
         const explode = listOfExplode.find(c => c.id == explodeId);
@@ -382,10 +471,62 @@
             $('#explodeTitle').val(explode.title);
             $('#explodeContent').val(explode.content);
             $('#explodeVideoId').val(explode.video);
-            $('#courseIsDeleted').prop('checked', explode.isDeleted);
+            $('#explodeIsDeleted').prop('checked', explode.isDeleted);
+            $('#saveButton').off('click').on('click', function () {
+                TryEdit();
+            }).text("Save changes");
 
             $('#explodeModal').modal('show');
         }
+    }
+
+    function TryCreate() {
+        if (!validateData()) return;
+
+        const tietHoc = {
+            courseId: @courseId,
+            title: document.getElementById('explodeTitle').value,
+            content: document.getElementById('explodeContent').value,
+            video: document.getElementById('explodeVideoId').value,
+            isDeleted: document.getElementById('explodeIsDeleted').checked
+        };
+
+        $.ajax({
+            url: 'EditExplode/Create',
+            type: 'POST',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("XSRF-TOKEN",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+            },
+            data: {
+                explode: tietHoc
+            },
+            success: function (response) {
+                showToast("Thông báo", "Tạo mới tiết học thành công", "bi bi-check-square", "success");
+                loadPage();
+            }, error: function (error) {
+                showToast("Tạo mới không thành công", error, "bi bi-exclamation-triangle", "danger");
+            }
+        });
+
+        $('#explodeModal').modal('hide');
+    }
+
+
+    function Create() {
+        $('#explodeId').val("");
+        $('#explodeCourseTitle').val(courseTitle);
+        $('#explodeTitle').val("");
+        $('#explodeContent').val("");
+        $('#explodeVideoId').val("");
+        $('#explodeIsDeleted').prop('checked', false);
+
+        $('#saveButton').off('click').on('click', function () {
+            TryCreate();
+        }).text('Create');
+
+        $('#explodeModal').modal('show');
+
     }
 
     $(document).ready(function () {

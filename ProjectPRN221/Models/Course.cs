@@ -1,5 +1,4 @@
-﻿using MailKit;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace ProjectPRN221.Models

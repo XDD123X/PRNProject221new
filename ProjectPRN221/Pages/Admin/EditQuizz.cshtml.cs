@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +9,7 @@ namespace ProjectPRN221.Pages.Admin
     public class EditQuizzModel : PageModel
     {
         private readonly int RecordPerPage = 5;
-        private int maxPage;
+        public static int maxPage;
 
         private readonly PROJECT_PRUContext dbcontext = new PROJECT_PRUContext();
         private readonly IDistributedCache _cache;
@@ -37,14 +36,13 @@ namespace ProjectPRN221.Pages.Admin
 
             return Page();
         }
-        public IActionResult OnGetPage(int index, int courseId)
+        public IActionResult OnGetPage(int index, int courseId, string search, string sortBy)
         {
             int skip = (index - 1) * RecordPerPage;
 
             var quizzes = dbcontext.Quizzes.Where(p => p.CourseId == courseId)
                                                       .OrderBy(c => c.Id)
-                                                      .Skip(skip)
-                                                      .Take(RecordPerPage)
+
                                                       .Include(p => p.Course)
                                                       .Select(c => new
                                                       {
@@ -60,6 +58,21 @@ namespace ProjectPRN221.Pages.Admin
                                                       })
                                                       .ToList();
 
+            if (search != null)
+            {
+                quizzes = quizzes.Where(p => p.Question.ToLower().Contains(search.ToLower())).ToList();
+            }
+
+            if (sortBy != null && sortBy.Equals("IDDESC"))
+            {
+                quizzes.Reverse();
+            }
+
+            maxPage = quizzes.Count() / RecordPerPage;
+            if (quizzes.Count() % RecordPerPage != 0) maxPage++;
+
+            quizzes = quizzes.Skip(skip).Take(RecordPerPage).ToList();
+  
             return new JsonResult(quizzes);
         }
 
@@ -93,6 +106,26 @@ namespace ProjectPRN221.Pages.Admin
 
             }
             return new JsonResult(new { success = true });
+        }
+
+
+        public IActionResult OnPostCreate(Quiz quiz)
+        {
+            try
+            {
+                dbcontext.Quizzes.Add(quiz);
+                dbcontext.SaveChanges();
+            }
+            catch
+            {
+                return new JsonResult(new { success = false });
+            }
+            return new JsonResult(new { success = true });
+        }
+
+        public IActionResult OnGetMaxpage()
+        {
+            return new JsonResult(maxPage);
         }
     }
 }
