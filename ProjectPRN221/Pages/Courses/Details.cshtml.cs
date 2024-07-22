@@ -91,26 +91,38 @@ namespace ProjectPRN221.Pages.Courses
             }
 
             var course = await _context.Courses
-                .Include(c => c.Explodes)
-                .Include(c => c.Quizzes)
-                .Include(c => c.EnroledCourses)
-                .FirstOrDefaultAsync(c => c.Id == id);
+        .Include(c => c.Explodes)
+        .Include(c => c.Quizzes)
+        .Include(c => c.EnroledCourses)
+        .FirstOrDefaultAsync(c => c.Id == id);
 
             if (course != null)
             {
                 if (currUser.Role.Equals("Lecture") && currUser.Id == course.UserId)
                 {
-                    if (course.Explodes != null)
+                    // Xóa các bản ghi liên quan từ bảng HistoryQuizzes
+                    var quizzes = course.Quizzes.ToList();
+                    var quizIds = quizzes.Select(q => q.Id).ToList();
+                    if (quizIds.Any())
+                    {
+                        var historyQuizzes = await _context.HistoryQuizzes
+                            .Where(hq => quizIds.Contains((long)hq.QuizzId))
+                            .ToListAsync();
+
+                        if (historyQuizzes.Any())
+                        {
+                            _context.HistoryQuizzes.RemoveRange(historyQuizzes);
+                        }
+
+                        _context.Quizzes.RemoveRange(quizzes);
+                    }
+
+                    if (course.Explodes != null && course.Explodes.Any())
                     {
                         _context.Explodes.RemoveRange(course.Explodes);
                     }
 
-                    if (course.Quizzes != null)
-                    {
-                        _context.Quizzes.RemoveRange(course.Quizzes);
-                    }
-
-                    if (course.EnroledCourses != null)
+                    if (course.EnroledCourses != null && course.EnroledCourses.Any())
                     {
                         _context.EnroledCourses.RemoveRange(course.EnroledCourses);
                     }
