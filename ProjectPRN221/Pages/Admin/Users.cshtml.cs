@@ -29,6 +29,7 @@ namespace ProjectPRN221.Pages.Admin
 
             maxPage = dbcontext.Users.Count() / RecordPerPage;
             if (dbcontext.Users.Count() % RecordPerPage != 0) maxPage++;
+
             ViewData["MaxPage"] = maxPage;
             ViewData["recordPerPage"] = RecordPerPage;
             ViewData["roles"] = dbcontext.Users.Select(p => p.Role).Distinct().ToList();    

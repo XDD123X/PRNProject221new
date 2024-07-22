@@ -29,6 +29,7 @@ namespace ProjectPRN221.Pages.Admin
 
             maxPage = dbcontext.Quizzes.Where(p => p.CourseId == CourseId).Count() / RecordPerPage;
             if (dbcontext.Quizzes.Where(p => p.CourseId == CourseId).Count() % RecordPerPage != 0) maxPage++;
+            if (maxPage == 0) maxPage = 1;
             ViewData["CourseName"] = dbcontext.Courses.FirstOrDefault(p => p.Id == CourseId).Title;
             ViewData["MaxPage"] = maxPage;
             ViewData["recordPerPage"] = RecordPerPage;
@@ -70,6 +71,7 @@ namespace ProjectPRN221.Pages.Admin
 
             maxPage = quizzes.Count() / RecordPerPage;
             if (quizzes.Count() % RecordPerPage != 0) maxPage++;
+            if (maxPage == 0) maxPage = 1;
 
             quizzes = quizzes.Skip(skip).Take(RecordPerPage).ToList();
   
