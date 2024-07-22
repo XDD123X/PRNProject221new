@@ -19,7 +19,6 @@ namespace ProjectPRN221.Pages.Explodes
                 return NotFound();
             }
             string? currUserID = HttpContext.Session.GetString("Session_User");
-            currUserID = "8";
 
             if (currUserID == null || currUserID == "")
             {

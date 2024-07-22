@@ -21,7 +21,6 @@ namespace ProjectPRN221.Pages.Explodes
         public async Task<IActionResult> OnGetAsync(long? eid, long? cid)
         {
             string? currUserID = HttpContext.Session.GetString("Session_User");
-            currUserID = "8";
             if (currUserID == null || currUserID == "")
             {
                 return RedirectToPage("/Authentication/login");
@@ -69,7 +68,6 @@ namespace ProjectPRN221.Pages.Explodes
                 return RedirectToPage("./Edit", new { edi = eid, cid = cid });
             }
             string? currUserID = HttpContext.Session.GetString("Session_User");
-            currUserID = "8";
             
             if (currUserID == null || currUserID == "")
             {
@@ -99,8 +97,6 @@ namespace ProjectPRN221.Pages.Explodes
                 return RedirectToPage("./Edit", new {cid = cid });
             }
             string? currUserID = HttpContext.Session.GetString("Session_User");
-            currUserID = "8";
-
             if (currUserID == null || currUserID == "")
             {
                 return RedirectToPage("/Authentication/login");
@@ -133,7 +129,6 @@ namespace ProjectPRN221.Pages.Explodes
                 return NotFound();
             }
             string? currUserID = HttpContext.Session.GetString("Session_User");
-            currUserID = "8";
 
             if (currUserID == null || currUserID == "")
             {

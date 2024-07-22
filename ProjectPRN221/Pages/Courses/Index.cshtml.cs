@@ -48,12 +48,6 @@ namespace ProjectPRN221.Pages.Courses
                 currUser = _context.Users.FirstOrDefault(c => c.Id == Int32.Parse(currUserID));
             }
 
-            currUser = new User()
-            {
-                Id = 1,
-                Role   = "Lecture",
-            };
-
             if (_context.Courses != null)
             {
                 var query = _context.Courses.Include(c => c.User).AsQueryable();

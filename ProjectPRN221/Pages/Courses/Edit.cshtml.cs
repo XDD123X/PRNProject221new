@@ -25,8 +25,6 @@ namespace ProjectPRN221.Pages.Courses
         {
             string? currUserID = HttpContext.Session.GetString("Session_User");
 
-            currUserID = "8";
-
             if (currUserID == null || currUserID == "")
             {
                 return RedirectToPage("/Authentication/login");
@@ -58,7 +56,6 @@ namespace ProjectPRN221.Pages.Courses
         public async Task<IActionResult> OnPostAsync(long? id)
         {
             string? currUserID = HttpContext.Session.GetString("Session_User");
-            currUserID = "8";
 
             if (currUserID == null || currUserID == "")
             {
@@ -92,7 +89,6 @@ namespace ProjectPRN221.Pages.Courses
         public async Task<IActionResult> OnPostDeleteAsync(long? id)
         {
             string? currUserID = HttpContext.Session.GetString("Session_User");
-            currUserID = "8";
 
             if (currUserID == null || currUserID == "")
             {
@@ -125,8 +121,6 @@ namespace ProjectPRN221.Pages.Courses
         public async Task<IActionResult> OnPostDeleteExplodeAsync(long explodeId)
         {
             string? currUserID = HttpContext.Session.GetString("Session_User");
-
-            currUserID = "8";
 
             if (currUserID == null || currUserID == "")
             {

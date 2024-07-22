@@ -18,17 +18,17 @@ namespace ProjectPRN221.Pages.Courses
 
         public User? CurrentUser { get; set; }
 
-        public IActionResult OnGet(long cid)
+        public async Task<IActionResult> OnGetAsync()
         {
-            //string? currUserID = HttpContext.Session.GetString("Session_User");
-            //if (currUserID == null || currUserID == "")
-            //{
-            //    return RedirectToPage("/Authentication/login");
-            //}
-            //else
-            //{
-            //    CurrentUser = await _context.Users.FindAsync(Int32.Parse(currUserID));
-            //}
+            string? currUserID = HttpContext.Session.GetString("Session_User");
+            if (currUserID == null || currUserID == "")
+            {
+                return RedirectToPage("/Authentication/login");
+            }
+            else
+            {
+                CurrentUser = await _context.Users.FindAsync(Int32.Parse(currUserID));
+            }
 
             CurrentUser = _context.Users.FirstOrDefault(u => u.Id == 1);
             Course = new Course();
