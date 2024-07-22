@@ -60,9 +60,7 @@
 
     .card-container {
         display: grid;
-        
         grid-template-columns: repeat(2, 1fr);
-
         justify-content: center;
         align-items: center;
     }
@@ -74,44 +72,59 @@
         margin: 0 auto;
         margin-bottom: 20px;
     }
+
     #userChart {
         margin: 0 auto;
         margin-bottom: 20px;
+    }
+
+    .SeeDetail {
+        display: flex;
+        flex-direction: row-reverse;
+        margin: 0px 10px;
+    }
+
+    .SeeDetail button {
+        border: 0px;
+        background-color: transparent;
     }
 </style>
 
 <div class="content">
     <div class="header">
         <h2>Statistic</h2>
+
     </div>
+    <div class="SeeDetail">
+        <button onclick="downloadExcel()">See detail</button>
+    </div>
+
     <div class="canvasContainer">
 
 
         <canvas id="userChart" width="600" height="300"></canvas>
     </div>
 
-        <div class="card-container">
-            <div class="card">
-                <div class="card-title">Total Revenues (This Month)</div>
-                <div class="card-content">@ViewData["MonthRevenues"]$</div>
-            </div>
-            <div class="card">
-                <div class="card-title">Total Revenues</div>
-                <div class="card-content">@ViewData["TotalRevenues"]$</div>
-            </div>
-
-            <div class="card">
-                <div class="card-title">Total Users (This Month)</div>
-                <div class="card-content">@ViewData["UserInMonth"]</div>
-            </div>
-            <div class="card">
-                <div class="card-title">Total Users </div>
-                <div class="card-content">@ViewData["TotalUser"]</div>
-            </div>
+    <div class="card-container">
+        <div class="card">
+            <div class="card-title">Total Revenues (This Month)</div>
+            <div class="card-content">@ViewData["MonthRevenues"]$</div>
+        </div>
+        <div class="card">
+            <div class="card-title">Total Revenues</div>
+            <div class="card-content">@ViewData["TotalRevenues"]$</div>
         </div>
 
+        <div class="card">
+            <div class="card-title">Total Users (This Month)</div>
+            <div class="card-content">@ViewData["UserInMonth"]</div>
+        </div>
+        <div class="card">
+            <div class="card-title">Total Users </div>
+            <div class="card-content">@ViewData["TotalUser"]</div>
+        </div>
+    </div>
 
-    <button id="downloadCSV" onclick="downloadExcel()">Download CSV</button>
 </div>
 <script>
     let listOfCourse;
@@ -135,10 +148,8 @@
             ]
         };
 
-        // Get the canvas element
         var ctx = document.getElementById('userChart').getContext('2d');
 
-        // Create a doughnut chart
         var userChart = new Chart(ctx, {
             type: 'doughnut',
             data: userData,
@@ -154,27 +165,40 @@
     }
 
     function downloadExcel() {
-        const canvas = document.getElementById('userChart');
-        const chartImage = canvas.toDataURL('image/png');
-
         const wb = XLSX.utils.book_new();
 
-         listOfCourse = @Html.Raw(nameJson);
+        listOfCourse = @Html.Raw(nameJson);
 
-         listOfRevenues = @Html.Raw(listRevenues);
+        listOfRevenues = @Html.Raw(listRevenues);
 
         const ws_data = [
-            ["Total Revenues (This Month)", "Total Revenues", "Total Users (This Month)", "Total Users", "Chart Image"],
-            [@ViewData["MonthRevenues"], @ViewData["TotalRevenues"], @ViewData["UserInMonth"], @ViewData["TotalUser"], chartImage],
-            listOfCourse,
-            listOfRevenues,
+            ["Total Revenues (This Month)", "Total Revenues", "", "Total Users (This Month)", "Total Users"],
+            [@ViewData["MonthRevenues"], @ViewData["TotalRevenues"], "", @ViewData["UserInMonth"], @ViewData["TotalUser"]],
+            ["Course title", "Revenues"]
         ];
-        
+
+        listOfCourse.forEach((num, idx) => {
+            if (!ws_data[idx + 3]) {
+                ws_data[idx + 3] = [];
+            }
+            ws_data[idx + 3][0] = num;
+        });
+
+        listOfRevenues.forEach((num, idx) => {
+            if (!ws_data[idx + 3]) {
+                ws_data[idx + 3] = [];
+            }
+            ws_data[idx + 3][1] = num;
+        });
+
+        ws_data[2][3] = "Student number ";
+        ws_data[3][4] = @ViewData["Student"];
+        ws_data[3][3] = "Lecture number ";
+        ws_data[2][4] = @ViewData["Lecture"];
 
         const ws = XLSX.utils.aoa_to_sheet(ws_data);
         XLSX.utils.book_append_sheet(wb, ws, "Statistics");
 
-        // Generate Excel file
         XLSX.writeFile(wb, 'detail_data.xlsx');
     }
 
