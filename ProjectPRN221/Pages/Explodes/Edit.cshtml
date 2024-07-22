@@ -43,7 +43,7 @@
                             <li class="mb-3">
                                 <i class="fas fa-plus text-info me-2" onclick="showVideo('@explode.Id')"></i>
                                 <a asp-page="./Edit" asp-route-eid="@explode.Id" asp-route-cid="@Model.Course.Id">@explode.Title</a>
-                                <form method="post" asp-page-handler="DeleteExplode" asp-route-explodeId="@explode.Id" style="display:inline;">
+                                <form method="post" asp-page-handler="Delete" asp-route-eid="@explode.Id" style="display:inline;">
                                     <button type="submit" class="btn btn-danger btn-sm ms-2">Delete</button>
                                 </form>
                                 <div id="video-@explode.Id" class="video-container" style="display:none;">
