@@ -11,6 +11,7 @@ namespace ProjectPRN221.Models
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public bool? IsDeleted { get; set; }
+
         public virtual Course? Course { get; set; }
         public virtual User? User { get; set; }
     }

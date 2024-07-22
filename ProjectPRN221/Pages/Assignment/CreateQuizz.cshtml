@@ -1,0 +1,353 @@
+﻿@page "{handler?}"
+@model ProjectPRN221.Pages.Assignment.CreateQuizzModel
+@using System.Text.Json
+
+@using ProjectPRN221.Models
+@{
+    List<Quiz> quizz = ViewData["quizz"] as List<Quiz>;
+    string quizzJson = JsonSerializer.Serialize(quizz);
+    int courseId = (int)ViewData["courseId"];
+}
+<head>
+    <style>
+        .buttonShow {
+            border: 0px;
+            background-color: transparent;
+        }
+
+        .toTheRight {
+            text-align: right;
+        }
+    </style>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+</head>
+<section class="pt-0">
+    @Html.AntiForgeryToken()
+
+    <div class="container">
+
+        <div style="display:flex; flex-direction: row-reverse;">
+            <div class="icon" onclick="Create()">
+                Create
+                <img style="margin-left:5px;" src="https://www.svgrepo.com/show/522232/plus-square.svg" witdh="16" height="16" />
+            </div>
+        </div>
+
+        <div id="toast-container" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>
+
+        <div>
+        </div>
+
+        <div class="QuizzList" id="QuizzList">
+        </div>
+    </div>
+
+
+</section>
+<div class="modal fade" id="quizModal" tabindex="-1" aria-labelledby="quizModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="quizModalLabel">Quiz Edit</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="quizQuestion">Question</label>
+                        <input type="text" class="form-control" id="quizQuestion">
+                    </div>
+                    <div class="form-group">
+                        <label for="quizAnswer1">Option 1</label>
+                        <input type="text" class="form-control" id="quizAnswer1">
+                    </div>
+                    <div class="form-group">
+                        <label for="quizAnswer2">Option 2</label>
+                        <input type="text" class="form-control" id="quizAnswer2">
+                    </div>
+                    <div class="form-group">
+                        <label for="quizAnswer3">Option 3</label>
+                        <input type="text" class="form-control" id="quizAnswer3">
+                    </div>
+                    <div class="form-group">
+                        <label for="quizAnswer4">Option 4</label>
+                        <input type="text" class="form-control" id="quizAnswer4">
+                    </div>
+                    <div class="form-group">
+                        <label for="quizTrueAnswer">True answer</label>
+                        <select id="quizTrueAnswer" class="form-control">
+                            <option value="1">Lựa chọn 1</option>
+                            <option value="2">Lựa chọn 2</option>
+                            <option value="3">Lựa chọn 3</option>
+                            <option value="4">Lựa chọn 4</option>
+                        </select>
+                    </div>
+                    <div class="form-group d-flex align-items-center" style="justify-content: space-evenly;">
+                        <div class="form-group">
+                            <label for="quizIsDeleted">Is deleted</label>
+                            <input type="checkbox" class="form-check-input" id="quizIsDeleted">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="SaveButton">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var listQuiz = @Html.Raw(quizzJson);
+    let currEditQuizId;
+
+    function ShowQuestion(questionId) {
+        $('#question' + questionId).toggle();
+    }
+
+    function LoadPage() {
+        $('#QuizzList').empty();
+
+        listQuiz.forEach(function (quiz, index) {
+            var showHideText = quiz.IsDeleted ? "Show" : "Hide";
+            var Question = escapeHtml(String(quiz.Question));
+            var option1 = escapeHtml(String(quiz.Option1));
+            var option2 = escapeHtml(String(quiz.Option2));
+            var option3 = escapeHtml(String(quiz.Option3));
+            var option4 = escapeHtml(String(quiz.Option4));
+
+            var quizHtml = `
+                            <div style="height: 30px; background-color: #8080803d; display: flex; align-items: center;">
+                                <div onclick="ShowQuestion(${quiz.Id})">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
+                                        <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0"/>
+                                    </svg>
+                                    <button class="buttonShow">
+                                        ${Question}
+                                    </button>
+                                </div>
+                                <div style="flex-grow: 1;"></div>
+                                <button class="buttonShow" onclick="Toggle(${quiz.Id}, this)">
+                                    ${showHideText}
+                                </button>
+                                <button class="buttonShow" onclick="EditQuestion(${quiz.Id})">
+                                    Edit
+                                </button>
+                            </div>
+                            <div class="collapse" id="question${quiz.Id}">
+                                <div class="card card-body">
+                                    <p>Question: ${Question}</p>
+                                    <p>Answer 1: ${option1}</p>
+                                    <p>Answer 2: ${option2}</p>
+                                    <p>Answer 3: ${option3}</p>
+                                    <p>Answer 4: ${option4}</p>
+                                    <p>True answer: ${quiz.Answer}</p>
+                                </div>
+                            </div>
+                        `;
+            $('#QuizzList').append(quizHtml);
+        });
+    }
+
+    function validateData() {
+        if ($.trim($("#quizQuestion").val()) == "") {
+            showToast("Thông báo", "Thiếu câu hỏi", "bi bi-exclamation-triangle", "danger");
+            return false;
+        } else if ($.trim($("#quizAnswer1").val()) == "") {
+            showToast("Thông báo", "Thiếu tùy chọn 1", "bi bi-exclamation-triangle", "danger");
+            return false;
+        } else if ($.trim($("#quizAnswer2").val()) == "") {
+            showToast("Thông báo", "Thiếu tùy chọn 2", "bi bi-exclamation-triangle", "danger");
+            return false;
+        } else if ($.trim($("#quizAnswer3").val()) == "") {
+            showToast("Thông báo", "Thiếu tùy chọn 3", "bi bi-exclamation-triangle", "danger");
+            return false;
+        } else if ($.trim($("#quizAnswer4").val()) == "") {
+            showToast("Thông báo", "Thiếu tùy chọn 4", "bi bi-exclamation-triangle", "danger");
+            return false;
+        } else if ($.trim($("#quizTrueAnswer").val()) == "") {
+            showToast("Thông báo", "Thiếu đáp án chuẩn", "bi bi-exclamation-triangle", "danger");
+            return false;
+        }
+        return true;
+    }
+
+    function EditQuestion(quizzId) {
+        const quiz = listQuiz.find(c => c.Id == quizzId);
+        if (quiz) {
+            $('#quizQuestion').val(quiz.Question);
+            $('#quizAnswer1').val(quiz.Option1);
+            $('#quizAnswer2').val(quiz.Option2);
+            $('#quizAnswer3').val(quiz.Option3);
+            $('#quizAnswer4').val(quiz.Option4);
+            $('#quizTrueAnswer').val(quiz.Answer);
+            $('#quizIsDeleted').prop('checked', quiz.IsDeleted);
+
+            $('#SaveButton').off('click').on('click', function () {
+                TryEdit();
+            }).text("Saves Change");
+            currEditQuizId = quiz.Id;
+            $('#quizModal').modal('show');
+        }
+    }
+
+    function Create() {
+        $('#quizQuestion').val("");
+        $('#quizAnswer1').val("");
+        $('#quizAnswer2').val("");
+        $('#quizAnswer3').val("");
+        $('#quizAnswer4').val("");
+        $('#quizTrueAnswer').val("");
+        $('#quizIsDeleted').prop('checked', false);
+
+        $('#SaveButton').off('click').on('click', function () {
+            TryCreate();
+        }).text("Create");
+        $('#quizModal').modal('show');
+    }
+
+    function TryCreate() {
+        if (!validateData()) return;
+        const cauHoi = {
+            CourseId: @courseId,
+            Question: $("#quizQuestion").val(),
+            Option1: $("#quizAnswer1").val(),
+            Option2: $("#quizAnswer2").val(),
+            Option3: $("#quizAnswer3").val(),
+            Option4: $("#quizAnswer4").val(),
+            Answer: $("#quizTrueAnswer").val(),
+            isDeleted: document.getElementById('quizIsDeleted').checked
+        };
+
+        $.ajax({
+            url: 'CreateQuizz/Create',
+            type: 'POST',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("XSRF-TOKEN",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+            },
+            data: {
+                quiz: cauHoi
+            },
+            success: function (response) {
+                showToast("Thông báo", "Tạo câu hỏi mới thành công", "bi bi-check-square", "success");
+                listQuiz.push(cauHoi);
+                LoadPage();
+                $('#quizModal').modal('hide');
+            }, error: function (error) {
+                showToast("Tạo mới không thành công", error, "bi bi-exclamation-triangle", "danger");
+            }
+        });
+    }
+
+    function TryEdit() {
+        if (!validateData()) return;
+        const cauHoi = {
+            id: currEditQuizId,
+            question: $("#quizQuestion").val(),
+            option1: $("#quizAnswer1").val(),
+            option2: $("#quizAnswer2").val(),
+            option3: $("#quizAnswer3").val(),
+            option4: $("#quizAnswer4").val(),
+            answer: $("#quizTrueAnswer").val(),
+            isDeleted: document.getElementById('quizIsDeleted').checked
+        };
+
+        $.ajax({
+            url: 'CreateQuizz/Edit',
+            type: 'POST',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("XSRF-TOKEN",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+            },
+            data: {
+                quiz: cauHoi
+            },
+            success: function (response) {
+                showToast("Thông báo", "Chỉnh sửa câu hỏi thành công", "bi bi-check-square", "success");
+                let find = listQuiz.find(c => c.Id == currEditQuizId);
+                if (find) {
+                    find.Question = $("#quizQuestion").val();
+                    find.Option1 = $("#quizAnswer1").val();
+                    find.Option2 = $("#quizAnswer2").val();
+                    find.Option3 = $("#quizAnswer3").val();
+                    find.Option4 = $("#quizAnswer4").val();
+                    find.Answer = $("#quizTrueAnswer").val();
+                    find.IsDeleted = $('#quizIsDeleted').val();
+                    LoadPage();
+                }
+                $('#quizModal').modal('hide');
+            }, error: function (error) {
+                showToast("Chỉnh sửa không thành công", error, "bi bi-exclamation-triangle", "danger");
+            }
+        });
+    }
+
+    function Toggle(quizzId, element) {
+        $.ajax({
+            url: `CreateQuizz/Toggle?quizzId=${quizzId}`,
+            type: 'POST',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("XSRF-TOKEN",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+            },
+            success: function (response) {
+                showToast("Thông báo", "Cập nhập trạng thái thành công", "bi bi-check-square", "success");
+                var status = $.trim($(element).text());
+                let find = listQuiz.find(p => p.Id == quizzId);
+                if (status == "Hide") {
+                    $(element).text("Show");
+                    find.IsDeleted = true;
+                } else {
+                    $(element).text("Hide");
+
+                    find.IsDeleted = false;
+                }
+            }, error: function (error) {
+                showToast("Cập nhập không thành công", error, "bi bi-exclamation-triangle", "danger");
+            }
+        });
+    }
+
+    function escapeHtml(unsafe) {
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function showToast(title, message, iconClass, variant) {
+        const toastContainer = $('#toast-container');
+
+        const toastId = `toast-${Date.now()}`;
+
+        const toast = $(`
+                                    <div id="${toastId}" class="toast bg-${variant} text-white border-0" role="alert" aria-live="assertive" aria-atomic="true" data-delay="5000">
+                                        <div class="d-flex">
+                                            <div class="toast-body">
+                                                <i class="${iconClass}"></i> ${title}: ${message}
+                                            </div>
+                                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                                        </div>
+                                    </div>
+                                `);
+
+        toastContainer.append(toast);
+
+        const toastElement = new bootstrap.Toast(toast[0], { delay: 5000 });
+        toastElement.show();
+
+        toast.on('hidden.bs.toast', function () {
+            $(this).remove();
+        });
+    }
+
+    $(document).ready(function () {
+        LoadPage();
+    });
+</script>

@@ -20,7 +20,7 @@ CREATE TABLE users (
 	[role] varchar(100),
 	[username] varchar(255),
 	[created_at] DATETIME,
-	[updated] DATETIME,
+	[updated_at] DATETIME,
 	is_deleted bit
 ); 
 
@@ -116,28 +116,28 @@ INSERT INTO [dbo].[courses] (user_id, title, thumbnail, categories, description,
 
 INSERT INTO courses (user_id, title, thumbnail, categories, description, price, created_at, updated_at, is_actived, enrol_nums, is_deleted)
 VALUES
-(4, 'User Research for User', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTkfaWZXo9v8ltwKPSXKwKcTXYWCcV49Pt7pw&s', 'Research', 'Learn about user research techniques.', 29.99, GETDATE(), GETDATE(), 1, 50, 0),
-(4, 'Web Development Fundamentals', 'https://content.nordlayer.com/uploads/network_security_basics_7e0ba955f6.webp', 'Web Development', 'Introductory course on web development.', 19.99, GETDATE(), GETDATE(), 1, 80, 0),
-(4, 'Data Analysis with Python', 'https://pyimagesearch.com/wp-content/uploads/2019/01/python_ml_header.png', 'Data Science', 'Learn data analysis using Python.', 39.99, GETDATE(), GETDATE(), 1, 60, 0);
+(8, 'User Research for User', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTkfaWZXo9v8ltwKPSXKwKcTXYWCcV49Pt7pw&s', 'Research', 'Learn about user research techniques.', 29.99, GETDATE(), GETDATE(), 1, 50, 0),
+(8, 'Web Development Fundamentals', 'https://content.nordlayer.com/uploads/network_security_basics_7e0ba955f6.webp', 'Web Development', 'Introductory course on web development.', 19.99, GETDATE(), GETDATE(), 1, 80, 0),
+(8, 'Data Analysis with Python', 'https://pyimagesearch.com/wp-content/uploads/2019/01/python_ml_header.png', 'Data Science', 'Learn data analysis using Python.', 39.99, GETDATE(), GETDATE(), 1, 60, 0);
 
 -- enroll course
 INSERT INTO enroled_courses (user_id, course_id, created_at, updated_at, is_deleted)
 VALUES
-(2, 1, GETDATE(), GETDATE(), 0),
-(3, 2, GETDATE(), GETDATE(), 0),
-(4, 3, GETDATE(), GETDATE(), 0),
-(5, 4, GETDATE(), GETDATE(), 0),
-(6, 5, GETDATE(), GETDATE(), 0),
-(7, 6, GETDATE(), GETDATE(), 0),
-(5, 7, GETDATE(), GETDATE(), 0),
+(1, 1, GETDATE(), GETDATE(), 0),
+(2, 2, GETDATE(), GETDATE(), 0),
+(3, 3, GETDATE(), GETDATE(), 0),
+(4, 4, GETDATE(), GETDATE(), 0),
+(5, 5, GETDATE(), GETDATE(), 0),
+(6, 6, GETDATE(), GETDATE(), 0),
 (4, 7, GETDATE(), GETDATE(), 0),
-(2, 7, GETDATE(), GETDATE(), 0),
-(2, 6, GETDATE(), GETDATE(), 0),
-(4, 5, GETDATE(), GETDATE(), 0),
-(5, 6, GETDATE(), GETDATE(), 0),
-(6, 5, GETDATE(), GETDATE(), 0),
-(7, 4, GETDATE(), GETDATE(), 0),
-(2, 2, GETDATE(), GETDATE(), 0);
+(3, 7, GETDATE(), GETDATE(), 0),
+(1, 7, GETDATE(), GETDATE(), 0),
+(1, 6, GETDATE(), GETDATE(), 0),
+(3, 5, GETDATE(), GETDATE(), 0),
+(4, 6, GETDATE(), GETDATE(), 0),
+(5, 5, GETDATE(), GETDATE(), 0),
+(6, 4, GETDATE(), GETDATE(), 0),
+(1, 2, GETDATE(), GETDATE(), 0);
 
 --explode
 INSERT INTO explodes (course_id, content, title, video, is_deleted)
