@@ -9,16 +9,17 @@ namespace ProjectPRN221.Pages.Assignment
         PROJECT_PRUContext dbcontext = new PROJECT_PRUContext();
         public IActionResult OnGet(int courseId)
         {
-            //Course c = dbcontext.Courses.FirstOrDefault(p => p.Id == courseId);
-            //if (c == null) return RedirectToPage("/Courses/Index");
+            Course c = dbcontext.Courses.FirstOrDefault(p => p.Id == courseId);
+            if (c == null) return RedirectToPage("/Courses/Index");
 
-            //string? currUserID = HttpContext.Session.GetString("Session_User");
-            //if (currUserID == null) return RedirectToPage("/Authentication/login");
-            //User u = dbcontext.Users.FirstOrDefault(p => p.Id == int.Parse(currUserID));
-            //if (u.Role != "Lecture" && u.Id != c.Id)
-            //{
-            //    return RedirectToAction("/Courses/Index");
-            //}
+            string? currUserID = HttpContext.Session.GetString("Session_User");
+            if (currUserID == null) return RedirectToPage("/Authentication/login");
+
+            User u = dbcontext.Users.FirstOrDefault(p => p.Id == long.Parse(currUserID));
+            if (u.Role != "Lecture" && u.Id != c.Id)
+            {
+                return RedirectToAction("/Courses/Index");
+            }
 
             ViewData["courseId"] = courseId;
 
@@ -56,7 +57,7 @@ namespace ProjectPRN221.Pages.Assignment
                 find.Option3 = quiz.Option3;
                 find.Option4 = quiz.Option4;
                 find.Answer = quiz.Answer;
-                Console.WriteLine("TAO LAM DC");
+
                 dbcontext.Update(find);
                 dbcontext.SaveChanges();
                 return new JsonResult(new { success = true });

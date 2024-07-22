@@ -17,7 +17,8 @@
     .Answer {
         display: block;
     }
-    .WrongAnswer {
+
+    .WrongAnswer, .fullyWrong {
         color : red;
     }
     .RightAnswer {
@@ -81,11 +82,11 @@
             </div>
         } else
         {
-            <div> <p>Total point: @point.ToString("0.00f") </p> </div>
+            <div> <p>Total point: @point.ToString("0.00") </p> </div>
             foreach (HistoryQuiz hq in history)
             {
                 questionNumber++;
-                <div class="Question-@questionNumber">
+                <div class="Question-@questionNumber @(hq.Answer == -1 ? "fullyWrong" : "")">
                     <p>
                         Question @questionNumber: @hq.Quizz.Question
                     </p>

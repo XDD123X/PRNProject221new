@@ -19,13 +19,13 @@ namespace ProjectPRN221.Pages.Admin
         }
         public async Task<IActionResult> OnGet()
         {
-            //String email = await _cache.GetStringAsync("adminEmail");
-            //if (email == null)
-            //{
-            //    return RedirectToPage("Login_Cw4B8w6tetCtzk7PQHuZbA==");
-            //}
-            //else
-            //{
+            String email = await _cache.GetStringAsync("adminEmail");
+            if (email == null)
+            {
+                return RedirectToPage("Login_Cw4B8w6tetCtzk7PQHuZbA==");
+            }
+            else
+            {
                 ViewData["MonthRevenues"] = await GetRevenuesInMonth();
                 ViewData["TotalRevenues"] = await GetRevenuesAsync();
 
@@ -53,7 +53,7 @@ namespace ProjectPRN221.Pages.Admin
                 ViewData["eachRevenues"] = eachRevenues;
 
                 return Page();
-            //}
+            }
         }
 
         public async Task<float> GetRevenuesAsync()
