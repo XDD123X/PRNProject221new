@@ -28,6 +28,9 @@ namespace ProjectPRN221.Pages.Courses
                 return NotFound();
             }
             string? currUserID = HttpContext.Session.GetString("Session_User");
+
+            currUserID = "2";
+
             if (currUserID == null || currUserID == "")
             {
                 currUser = null;
@@ -125,7 +128,9 @@ namespace ProjectPRN221.Pages.Courses
                     {
                         CourseId = cid,
                         UserId = uid,
-                        CreatedAt = DateTime.Now
+                        CreatedAt = DateTime.Now,
+                        UpdatedAt = DateTime.Now,
+                        IsDeleted = false,
                     };
 
                     _context.EnroledCourses.Add(enrollment);

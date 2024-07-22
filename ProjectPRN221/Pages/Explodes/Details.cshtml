@@ -14,11 +14,15 @@
             </div>
             <div class="col-md-4">
                 <div class="card">
-                    <ul class="list-group list-group-flush">
-                        @foreach (var e in Model.Course.Explodes.OrderBy(x => x.Content))
+                    <ul class="list-unstyled">
+                        @foreach (var explode in Model.Course.Explodes.OrderBy(x => x.Content))
                         {
-                            <li class="list-group-item @(e.Id == Model.Explode.Id ? "active" : "")">
-                                <a asp-page="./Details" asp-route-eid="@e.Id" asp-route-cid="@Model.Course.Id">@e.Title</a>
+                            <li class="mb-3">
+                                <i class="fas fa-plus text-info me-2" onclick="showVideo('@explode.Id')"></i>
+                                <a asp-page="./Detail" asp-route-eid="@explode.Id" asp-route-cid="@Model.Course.Id">@explode.Title</a>
+                                <div id="video-@explode.Id" class="video-container" style="display:none;">
+                                    <iframe width="320" height="240" src="https://www.youtube.com/embed/@explode.Video" frameborder="0" allowfullscreen></iframe>
+                                </div>
                             </li>
                         }
                     </ul>
@@ -34,3 +38,13 @@
         font-weight: bold;
     }
 </style>
+<script>
+    function showVideo(explodeId) {
+        var videoContainer = document.getElementById('video-' + explodeId);
+        if (videoContainer.style.display === "none" || videoContainer.style.display === "") {
+            videoContainer.style.display = "block";
+        } else {
+            videoContainer.style.display = "none";
+        }
+    }
+</script>

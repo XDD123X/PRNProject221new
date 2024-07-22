@@ -13,6 +13,8 @@
                     <form method="post" asp-page-handler="Delete" asp-route-id="@Model.Course.Id" onsubmit="return confirm('Are you sure you want to delete this course?');" style="display:inline;">
                         <button type="submit" class="btn btn-danger">Delete</button>
                     </form>
+                    <h1>Add Quizz</h1>
+                    <a asp-page="/Assignment/CreateQuizz" asp-route-CourseID="@Model.Course.Id" asp-route-UserID="@Model.currUser.Id">Assginment</a>
                 }
                 <a asp-page="./Index" class="btn btn-secondary ms-2">Back to List</a>
             </div>
@@ -80,7 +82,7 @@ else
                             {
                                 <li class="mb-3">
                                     <i class="fas fa-plus text-info me-2" onclick="showVideo('@explode.Id')"></i>
-                                    <a asp-page="/Explodes/Details" asp-route-eid="@explode.Id" asp-route-cid="@Model.Course.Id">@explode.Title</a>
+                                    <a asp-page="/Explodes/Edit" asp-route-eid="@explode.Id" asp-route-cid="@Model.Course.Id">@explode.Title</a>
                                     <form method="post" asp-page-handler="DeleteExplode" asp-route-explodeId="@explode.Id" style="display:inline;">
                                         <button type="submit" class="btn btn-danger btn-sm ms-2">Delete</button>
                                     </form>

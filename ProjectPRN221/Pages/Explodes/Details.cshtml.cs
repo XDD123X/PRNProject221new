@@ -18,15 +18,17 @@ namespace ProjectPRN221.Pages.Explodes
             {
                 return NotFound();
             }
-            //string? currUserID = HttpContext.Session.GetString("Session_User");
-            //if (currUserID == null || currUserID == "")
-            //{
-            //    return RedirectToPage("/Authentication/login");
-            //}
-            //else
-            //{
-            //    currUser = _context.Users.FirstOrDefault(c => c.Id == Int32.Parse(currUserID));
-            //}
+            string? currUserID = HttpContext.Session.GetString("Session_User");
+            currUserID = "8";
+
+            if (currUserID == null || currUserID == "")
+            {
+                return RedirectToPage("/Authentication/login");
+            }
+            else
+            {
+                currUser = _context.Users.FirstOrDefault(c => c.Id == Int32.Parse(currUserID));
+            }
 
             var explode = await _context.Explodes
                 .FirstOrDefaultAsync(m => m.Id == eid);

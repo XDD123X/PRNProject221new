@@ -20,15 +20,16 @@ namespace ProjectPRN221.Pages.Explodes
 
         public async Task<IActionResult> OnGetAsync(long? eid, long? cid)
         {
-            //string currUserID = HttpContext.Session.GetString("Session_User");
-            //if (currUserID == null || currUserID == "")
-            //{
-            //    return RedirectToPage("/Authentication/login");
-            //}
-            //else
-            //{
-            //    currUser = _context.Users.FirstOrDefault(c => c.Id == Int32.Parse(currUserID));
-            //}
+            string? currUserID = HttpContext.Session.GetString("Session_User");
+            currUserID = "8";
+            if (currUserID == null || currUserID == "")
+            {
+                return RedirectToPage("/Authentication/login");
+            }
+            else
+            {
+                currUser = _context.Users.FirstOrDefault(c => c.Id == Int32.Parse(currUserID));
+            }
             if (cid == null)
             {
                 return NotFound();
@@ -65,25 +66,18 @@ namespace ProjectPRN221.Pages.Explodes
         {
             if (!ModelState.IsValid)
             {
-                return Page();
-            }
-            //string? currUserID = HttpContext.Session.GetString("Session_User");
-            //if (currUserID == null || currUserID == "")
-            //{
-            //    return RedirectToPage("/Authentication/login");
-            //}
-            //else
-            //{
-            //    currUser = _context.Users.FirstOrDefault(c => c.Id == Int32.Parse(currUserID));
-            //}
-            currUser = new User()
-            {
-                Id = 8,
-                Role = "Lecture"
-            };
-            if (!ModelState.IsValid)
-            {
                 return RedirectToPage("./Edit", new { edi = eid, cid = cid });
+            }
+            string? currUserID = HttpContext.Session.GetString("Session_User");
+            currUserID = "8";
+            
+            if (currUserID == null || currUserID == "")
+            {
+                return RedirectToPage("/Authentication/login");
+            }
+            else
+            {
+                currUser = _context.Users.FirstOrDefault(c => c.Id == Int32.Parse(currUserID));
             }
             var explodeToUpdate = await _context.Explodes.FindAsync(eid);
             if (explodeToUpdate != null)
@@ -95,30 +89,26 @@ namespace ProjectPRN221.Pages.Explodes
                 _context.Update(explodeToUpdate);
                 await _context.SaveChangesAsync();
             }
-
-            return RedirectToPage("./Details", new { eid = Explode.Id, cid = Explode.CourseId });
+            return RedirectToPage("./Edit", new { edi = eid, cid = cid });
         }
 
         public async Task<IActionResult> OnPostCreateAsync(long cid)
         {
             if (!ModelState.IsValid)
             {
-                return RedirectToPage("./Details", new {cid = Explode.CourseId });
+                return RedirectToPage("./Edit", new {cid = cid });
             }
-            //string? currUserID = HttpContext.Session.GetString("Session_User");
-            //if (currUserID == null || currUserID == "")
-            //{
-            //    return RedirectToPage("/Authentication/login");
-            //}
-            //else
-            //{
-            //    currUser = _context.Users.FirstOrDefault(c => c.Id == Int32.Parse(currUserID));
-            //}
-            currUser = new User()
+            string? currUserID = HttpContext.Session.GetString("Session_User");
+            currUserID = "8";
+
+            if (currUserID == null || currUserID == "")
             {
-                Id = 8,
-                Role = "Lecture"
-            };
+                return RedirectToPage("/Authentication/login");
+            }
+            else
+            {
+                currUser = _context.Users.FirstOrDefault(c => c.Id == Int32.Parse(currUserID));
+            }
             try
             {
                 var explodeToCreate = new Explode();
@@ -128,7 +118,7 @@ namespace ProjectPRN221.Pages.Explodes
                 explodeToCreate.CourseId = cid;
                 _context.Explodes.Add(explodeToCreate);
                 await _context.SaveChangesAsync();
-                return RedirectToPage("./Details", new { eid = Explode.Id, cid = Explode.CourseId });
+                return RedirectToPage("./Edit", new { cid = cid });
             }
             catch (Exception ex)
             {
@@ -142,16 +132,27 @@ namespace ProjectPRN221.Pages.Explodes
             {
                 return NotFound();
             }
+            string? currUserID = HttpContext.Session.GetString("Session_User");
+            currUserID = "8";
 
+            if (currUserID == null || currUserID == "")
+            {
+                return RedirectToPage("/Authentication/login");
+            }
+            else
+            {
+                currUser = _context.Users.FirstOrDefault(c => c.Id == Int32.Parse(currUserID));
+            }
             var explode = await _context.Explodes.FindAsync(eid);
 
             if (explode != null)
             {
                 _context.Explodes.Remove(explode);
                 await _context.SaveChangesAsync();
+                return RedirectToPage("./Edit", new { cid = explode.CourseId });
             }
-
-            return RedirectToPage("./Detail", new { cid = Course.Id });
+            return NotFound();
+            
         }
 
         private bool ExplodeExists(long id)
