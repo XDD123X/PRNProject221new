@@ -34,8 +34,26 @@ namespace ProjectPRN221.Pages.Courses
 
         public int TotalPages { get; set; }
 
-        public async Task OnGetAsync()
+        public User? currUser { get; set; } = default!;
+
+        public async Task<IActionResult> OnGetAsync()
         {
+            string? currUserID = HttpContext.Session.GetString("Session_User");
+            if (currUserID == null)
+            {
+                currUser = null;
+            }
+            else
+            {
+                currUser = _context.Users.FirstOrDefault(c => c.Id == Int32.Parse(currUserID));
+            }
+
+            currUser = new User()
+            {
+                Id = 1,
+                Role   = "Lecture",
+            };
+
             if (_context.Courses != null)
             {
                 var query = _context.Courses.Include(c => c.User).AsQueryable();
@@ -75,6 +93,7 @@ namespace ProjectPRN221.Pages.Courses
                 Categories = await _context.Courses.Select(c => c.Categories)
                              .Distinct().ToListAsync();
             }
+            return Page();
         }
     }
 }

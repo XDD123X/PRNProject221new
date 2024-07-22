@@ -96,6 +96,7 @@ namespace ProjectPRN221.Pages.Authentication
 				{
 					User user = (User)student.FirstOrDefault();
 					user.IsDeleted = true;
+					user.UpdatedAt = DateTime.Now;
 					_context.Update(user);
 					_context.SaveChanges();
 				}

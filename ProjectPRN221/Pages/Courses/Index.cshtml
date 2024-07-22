@@ -12,6 +12,9 @@
                 {
                     <h6 class="font-sans-serif text-primary fw-bold">Course category</h6>
                     <h1 class="mb-6">@Model.Category</h1>
+                }@if (Model.currUser.Role == "Lecture")
+                {
+                    <a asp-page="./Create" class="btn btn-primary mb-4">Create Course</a>
                 }
                 <form method="get" class="row g-3">
                     <div class="col-sm-6 col-md-3">

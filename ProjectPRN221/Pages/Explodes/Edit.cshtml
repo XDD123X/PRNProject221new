@@ -1,0 +1,67 @@
+﻿@page
+@model ProjectPRN221.Pages.Explodes.EditModel
+@{
+    ViewData["Title"] = Model.isCreateExplode ? "Create Explode" : "Edit Explode";
+}
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                @if (!Model.isCreateExplode)
+                {
+                    <form method="post" asp-page-handler="Delete" asp-route-eid="@Model.Explode.Id" onsubmit="return confirm('Are you sure you want to delete this explode?');">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                }
+                <h1>@(Model.isCreateExplode ? "Create Explode" : "Edit Explode")</h1>
+                <form method="post" asp-page-handler="@(Model.isCreateExplode ? "Create" : "Edit")">
+                    <div class="form-group">
+                        <label for="Title">Title</label>
+                        <input type="text" class="form-control" id="Title" name="Explode.Title" value="@Model.Explode.Title" />
+                    </div>
+                    <div class="form-group">
+                        <label for="Video">Video URL</label>
+                        <input type="text" class="form-control" id="Video" name="Explode.Video" value="https://www.youtube.com/watch?v=@Model.Explode.Video" oninput="updateVideo()" />
+                        <iframe id="videoIframe" width="650" height="400" src="https://www.youtube.com/embed/@Model.Explode.Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                    <div class="form-group">
+                        <label for="Content">Content</label>
+                        <textarea class="form-control" id="Content" name="Explode.Content" rows="4">@Model.Explode.Content</textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">@((Model.isCreateExplode) ? "Create" : "Save")</button>
+                </form>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <ul class="list-group list-group-flush">
+                        @foreach (var e in Model.Course.Explodes.OrderBy(x => x.Content))
+                        {
+                            <li class="list-group-item @(e.Id == Model.Explode.Id ? "active" : "")">
+                                <a asp-page="./Edit" asp-route-eid="@e.Id" asp-route-cid="@Model.Course.Id">@e.Title</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<style>
+    .list-group-item.active {
+        background-color: #007bff;
+        color: white;
+        font-weight: bold;
+    }
+</style>
+<script>
+    function updateVideo() {
+        var videoInput = document.getElementById('Video').value;
+        var videoId = videoInput.split('v=')[1];
+        var ampersandPosition = videoId.indexOf('&');
+        if (ampersandPosition != -1) {
+            videoId = videoId.substring(0, ampersandPosition);
+        }
+        var iframe = document.getElementById('videoIframe');
+        iframe.src = 'https://www.youtube.com/embed/' + videoId;
+    }
+</script>
