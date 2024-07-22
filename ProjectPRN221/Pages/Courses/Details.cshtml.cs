@@ -121,7 +121,6 @@ namespace ProjectPRN221.Pages.Courses
                     return RedirectToPage("./Index");
                 }
             }
-
                 return RedirectToPage("./Index");
         }
 
