@@ -27,7 +27,7 @@ namespace ProjectPRN221.Pages.Explodes
             }
             else
             {
-                currUser = _context.Users.FirstOrDefault(c => c.Id == Int32.Parse(currUserID));
+                currUser = _context.Users.FirstOrDefault(c => c.Id == long.Parse(currUserID));
             }
             if (cid == null)
             {
@@ -75,7 +75,7 @@ namespace ProjectPRN221.Pages.Explodes
             }
             else
             {
-                currUser = _context.Users.FirstOrDefault(c => c.Id == Int32.Parse(currUserID));
+                currUser = _context.Users.FirstOrDefault(c => c.Id == long.Parse(currUserID));
             }
             var explodeToUpdate = await _context.Explodes.FindAsync(eid);
             if (explodeToUpdate != null)
@@ -103,7 +103,7 @@ namespace ProjectPRN221.Pages.Explodes
             }
             else
             {
-                currUser = _context.Users.FirstOrDefault(c => c.Id == Int32.Parse(currUserID));
+                currUser = _context.Users.FirstOrDefault(c => c.Id == long.Parse(currUserID));
             }
             try
             {
@@ -136,7 +136,7 @@ namespace ProjectPRN221.Pages.Explodes
             }
             else
             {
-                currUser = _context.Users.FirstOrDefault(c => c.Id == Int32.Parse(currUserID));
+                currUser = _context.Users.FirstOrDefault(c => c.Id == long.Parse(currUserID));
             }
             var explode = await _context.Explodes.FindAsync(eid);
 

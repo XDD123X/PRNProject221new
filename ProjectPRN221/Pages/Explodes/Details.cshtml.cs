@@ -26,7 +26,7 @@ namespace ProjectPRN221.Pages.Explodes
             }
             else
             {
-                currUser = _context.Users.FirstOrDefault(c => c.Id == Int32.Parse(currUserID));
+                currUser = _context.Users.FirstOrDefault(c => c.Id == long.Parse(currUserID));
             }
 
             var explode = await _context.Explodes

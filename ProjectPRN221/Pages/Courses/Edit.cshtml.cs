@@ -31,7 +31,7 @@ namespace ProjectPRN221.Pages.Courses
             }
             else
             {
-                currUser = _context.Users.FirstOrDefault(c => c.Id == Int32.Parse(currUserID));
+                currUser = _context.Users.FirstOrDefault(c => c.Id == long.Parse(currUserID));
             }
             var course = await _context.Courses
                 .Include(c => c.Explodes)
@@ -40,7 +40,6 @@ namespace ProjectPRN221.Pages.Courses
             {
                 return NotFound();
             }
-            currUser = _context.Users.FirstOrDefault(u => u.Id == 8);
             if (currUser.Role.Equals("Lecture") && currUser.Id == course.UserId)
             {
                 Course = course;
@@ -63,7 +62,7 @@ namespace ProjectPRN221.Pages.Courses
             }
             else
             {
-                currUser = _context.Users.FirstOrDefault(c => c.Id == Int32.Parse(currUserID));
+                currUser = _context.Users.FirstOrDefault(c => c.Id == long.Parse(currUserID));
             }
             if (!ModelState.IsValid)
             {
@@ -96,7 +95,7 @@ namespace ProjectPRN221.Pages.Courses
             }
             else
             {
-                currUser = _context.Users.FirstOrDefault(c => c.Id == Int32.Parse(currUserID));
+                currUser = _context.Users.FirstOrDefault(c => c.Id == long.Parse(currUserID));
             }
 
             if (id == null || _context.Courses == null)
@@ -128,7 +127,7 @@ namespace ProjectPRN221.Pages.Courses
             }
             else
             {
-                currUser = _context.Users.FirstOrDefault(c => c.Id == Int32.Parse(currUserID));
+                currUser = _context.Users.FirstOrDefault(c => c.Id == long.Parse(currUserID));
             }
             var explode = await _context.Explodes.FindAsync(explodeId);
             if (explode != null)

@@ -29,8 +29,6 @@ namespace ProjectPRN221.Pages.Courses
             }
             string? currUserID = HttpContext.Session.GetString("Session_User");
 
-            currUserID = "2";
-
             if (currUserID == null || currUserID == "")
             {
                 currUser = null;

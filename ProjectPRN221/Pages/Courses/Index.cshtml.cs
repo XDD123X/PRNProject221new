@@ -45,7 +45,7 @@ namespace ProjectPRN221.Pages.Courses
             }
             else
             {
-                currUser = _context.Users.FirstOrDefault(c => c.Id == Int32.Parse(currUserID));
+                currUser = _context.Users.FirstOrDefault(c => c.Id == long.Parse(currUserID));
             }
 
             if (_context.Courses != null)
