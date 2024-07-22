@@ -14,7 +14,7 @@
                     </form>
                 }
                 <h1>@(Model.isCreateExplode ? "Create Explode" : "Edit Explode")</h1>
-                <form method="post" asp-page-handler="@(Model.isCreateExplode ? "Create" : "Edit")">
+                <form method="post" asp-page-handler="@(Model.isCreateExplode ? "Create" : "Edit")" asp-route-eid="@Model.Explode.Id" asp-route-cid="@Model.Course.Id">
                     <div class="form-group">
                         <label for="Title">Title</label>
                         <input type="text" class="form-control" id="Title" name="Explode.Title" value="@Model.Explode.Title" />

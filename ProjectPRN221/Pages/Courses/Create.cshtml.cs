@@ -29,8 +29,6 @@ namespace ProjectPRN221.Pages.Courses
             {
                 CurrentUser = await _context.Users.FindAsync(long.Parse(currUserID));
             }
-
-            CurrentUser = _context.Users.FirstOrDefault(u => u.Id == 1);
             Course = new Course();
 
             return Page();
