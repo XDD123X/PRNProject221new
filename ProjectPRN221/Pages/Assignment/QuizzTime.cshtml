@@ -100,19 +100,19 @@
                         <div class="Choosen @(hq.Answer == hq.Quizz.Answer && hq.Answer == 2 ? "RightAnswer" : "")
                         @(hq.Answer != hq.Quizz.Answer && hq.Answer == 2 ? "WrongAnswer" : "")">
                             <input type="radio" @(hq.Answer == 2 ? "checked" : "") disabled />
-                            <label>@hq.Quizz.Option1</label>
+                            <label>@hq.Quizz.Option2</label>
                         </div>
 
                         <div class="Choosen @(hq.Answer == hq.Quizz.Answer && hq.Answer == 3 ? "RightAnswer" : "")
                         @(hq.Answer != hq.Quizz.Answer && hq.Answer == 3 ? "WrongAnswer" : "")">
                             <input type="radio" @(hq.Answer == 3 ? "checked" : "") disabled />
-                            <label>@hq.Quizz.Option1</label>
+                            <label>@hq.Quizz.Option3</label>
                         </div>
 
                         <div class="Choosen @(hq.Answer == hq.Quizz.Answer && hq.Answer == 4 ? "RightAnswer" : "")
                         @(hq.Answer != hq.Quizz.Answer && hq.Answer == 4 ? "WrongAnswer" : "")">
                             <input type="radio" @(hq.Answer == 4 ? "checked" : "") disabled />
-                            <label>@hq.Quizz.Option1</label>
+                            <label>@hq.Quizz.Option4</label>
                         </div>
                     </div>
                 </div>
