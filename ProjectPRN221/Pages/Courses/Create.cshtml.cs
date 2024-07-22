@@ -27,7 +27,7 @@ namespace ProjectPRN221.Pages.Courses
             }
             else
             {
-                CurrentUser = await _context.Users.FindAsync(Int32.Parse(currUserID));
+                CurrentUser = await _context.Users.FindAsync(long.Parse(currUserID));
             }
 
             CurrentUser = _context.Users.FirstOrDefault(u => u.Id == 1);
@@ -40,18 +40,24 @@ namespace ProjectPRN221.Pages.Courses
         {
             if (!ModelState.IsValid)
             {
-                return Page();
+                return RedirectToPage("./Idenx");
             }
-
-            if (Course.Id == 0)
+            string? currUserID = HttpContext.Session.GetString("Session_User");
+            if (currUserID == null || currUserID == "")
             {
-                _context.Courses.Add(Course);
+                return RedirectToPage("/Authentication/login");
             }
             else
             {
-                _context.Courses.Update(Course);
+                CurrentUser = _context.Users.FirstOrDefault(c => c.Id == long.Parse(currUserID));
             }
-
+            var courseToCreate = new Course();
+            courseToCreate.Title = Course.Title;
+            courseToCreate.Thumbnail = Course.Thumbnail;
+            courseToCreate.Description = Course.Description;
+            courseToCreate.Categories = Course.Categories;
+            courseToCreate.UserId = CurrentUser.Id;
+            _context.Courses.Add(courseToCreate);
             await _context.SaveChangesAsync();
             return RedirectToPage("./Index");
         }
