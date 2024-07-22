@@ -286,22 +286,6 @@ INSERT INTO [dbo].[quizzes] (course_id, question, option_1, option_2, option_3, 
 update quizzes 
 set is_deleted = 0
 
--- history of quiz attempts
-INSERT INTO history_quizzes (user_id, quizz_id, answer, is_deleted)
-VALUES
-(2, 1, 1, 0),
-(3, 2, 1, 0),
-(2, 1, 1, 0),
-(3, 2, 1, 0),
-(2, 1, 1, 0),
-(3, 2, 1, 0),
-(2, 1, 1, 0),
-(3, 2, 1, 0),
-(2, 1, 1, 0),
-(3, 2, 1, 0),
-(2, 1, 1, 0),
-(3, 2, 1, 0),
-(2, 3, 1, 0);
 GO
 
 -- CODING TIME
