@@ -1,10 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Caching.Distributed;
-using ProjectPRN221.Core;
 using ProjectPRN221.Models;
-using StackExchange.Redis;
-using System.ComponentModel.DataAnnotations;
 
 namespace ProjectPRN221.Pages.Admin
 {
@@ -27,7 +24,7 @@ namespace ProjectPRN221.Pages.Admin
 
         public async Task<IActionResult> OnGet()
         {
-            string email = await _cache.GetRecordAsync<string>("adminEmail");
+            string email = HttpContext.Session.GetString("adminEmail");
             if (email != null)
             {
                 return RedirectToPage("Index");
@@ -47,10 +44,10 @@ namespace ProjectPRN221.Pages.Admin
             var adminAccount = new AdminAccount();
             configuration.GetSection("AdminAccount1").Bind(adminAccount);
 
-            User admin = dbcontext.Users.FirstOrDefault(x => x.Email == Email);
+            User admin = dbcontext.Users.FirstOrDefault(x => x.Email == Email && x.Role.ToUpper().Equals("ADMIN"));
             if ((admin != null) || (adminAccount.Email.Equals(Email) && adminAccount.Password.Equals(Password)))
             {
-                await _cache.SetRecordAsync<string>("adminEmail", Email);
+                HttpContext.Session.SetString("adminEmail", Email);
             } else
             {
                 ViewData["ErrorMessage"] = "Wrong mail or password";

@@ -6,6 +6,8 @@ using Microsoft.Extensions.Caching.Distributed;
 using Org.BouncyCastle.Utilities.Bzip2;
 using ProjectPRN221.Models;
 using System.Dynamic;
+using System.Security.Policy;
+using System.Text.RegularExpressions;
 
 namespace ProjectPRN221.Pages.Admin
 {
@@ -24,7 +26,7 @@ namespace ProjectPRN221.Pages.Admin
         public async Task<IActionResult> OnGet(int CourseId)
         {
 
-            String email = await _cache.GetStringAsync("adminEmail");
+            String email = HttpContext.Session.GetString("adminEmail");
             if (email == null)
             {
                 return RedirectToPage("Login_Cw4B8w6tetCtzk7PQHuZbA==");
@@ -75,6 +77,13 @@ namespace ProjectPRN221.Pages.Admin
             return new JsonResult(explodes);
         }
 
+        public String convertFromLinkToID(string youtubeLink)
+        {
+            var regex = new Regex(@"(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})", RegexOptions.IgnoreCase);
+            var match = regex.Match(youtubeLink);
+            return match.Success ? match.Groups[1].Value : youtubeLink;
+        }
+
         public IActionResult OnPostEdit(Explode explode)
         {
             try
@@ -85,6 +94,10 @@ namespace ProjectPRN221.Pages.Admin
                     e.Title = explode.Title;
                     e.Content = explode.Content;
                     e.IsDeleted = explode.IsDeleted;
+
+                        explode.Video = convertFromLinkToID(explode.Video);
+                    
+
                     e.Video = explode.Video;
 
                     dbcontext.Update(e);
@@ -110,6 +123,7 @@ namespace ProjectPRN221.Pages.Admin
         {
             try
             {
+                explode.Video = convertFromLinkToID(explode.Video);
                 dbcontext.Explodes.Add(explode);
                 dbcontext.SaveChanges();
             }

@@ -22,7 +22,7 @@ namespace ProjectPRN221.Pages.Admin
         }
         public async Task<IActionResult> OnGet()
         {
-            String email = await _cache.GetStringAsync("adminEmail");
+            String email = HttpContext.Session.GetString("adminEmail");
             if (email == null)
             {
                 return RedirectToPage("Login_Cw4B8w6tetCtzk7PQHuZbA==");

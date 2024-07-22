@@ -13,7 +13,7 @@ namespace ProjectPRN221.Pages.Admin
         }
         public async Task<IActionResult> OnGet()
         {
-            await _cache.RemoveAsync("adminEmail");
+            HttpContext.Session.Clear();
             return RedirectToPage("Login_Cw4B8w6tetCtzk7PQHuZbA==");
         }
     }
