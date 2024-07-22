@@ -8,6 +8,7 @@
     PROJECT_PRUContext _context = new PROJECT_PRUContext();
     int getMaximumPagination = (int)ViewData["MaxPage"];
     int recordPerPage = (int)ViewData["recordPerPage"];
+    List<String> roles = ViewData["roles"] as List<String>;
 }
 <style>
     .styled-table {
@@ -102,7 +103,18 @@
 
     .IsDeleted {
         background-color: gray !important;
+        text-align: center;
     }
+
+    #searchingBox {
+        margin-top: 5px;
+    }
+
+        #searchingBox input,
+        #searchingBox select,
+        #searchingBox label {
+            margin: 0 5px;
+        }
 </style>
 
 <div class="content">
@@ -110,9 +122,30 @@
     <div class="header">
         <h2>User table</h2>
     </div>
+
+    <div id="searchingBox" style="display:flex; flex-direction: row-reverse; margin-right:5px;">
+        <select name="sortBy" id="sortBy" onchange="updateSortBy()">
+            <option value="IDASC">Sắp xếp theo id ( Tăng )</option>
+            <option value="IDDESC">Sắp xếp theo id ( Giảm )</option>
+            <option value="CreatedDateASC">Sắp xếp theo ngày tạo ( Tăng )</option>
+            <option value="CreatedDateDESC">Sắp xếp theo ngày tạo ( Giảm )</option>
+            <option value="UpdatedDateASC">Sắp xếp theo ngày cập nhập ( Tăng )</option>
+            <option value="UpdatedDateDESC">Sắp xếp theo ngày cập nhập ( Giảm )</option>
+        </select>
+        <select name="role" id="role" onchange="updateRole()">
+            <option value="ALL">Tất cả</option>
+            @foreach (String s in roles)
+            {
+                <option value="@s">@s</option>
+            }
+        </select>
+        <label for="role">Loại</label>
+        <input type="text" name="search" id="search" onkeyup="updateSearch()" />
+    </div>
+
     <table class="styled-table">
         <thead>
-            <tr>
+            <tr style="text-align:center;">
                 <th>
                     ID
                 </th>
@@ -121,6 +154,12 @@
                 </th>
                 <th>
                     Username
+                </th>
+                <th>
+                    Created Date
+                </th>
+                <th>
+                    Updated Date
                 </th>
                 <th>Is deleted</th>
                 <th class="action">Action</th>
@@ -209,8 +248,94 @@
 
 <script>
     let pageNumber = 1;
-    const maximumPaginationPage = @getMaximumPagination;
+    let maximumPaginationPage = @getMaximumPagination;
     let listOfUser;
+
+    // SORT PART
+
+    let sortBy = "";
+    let search = "";
+    let role = "";
+
+    function updateSortBy() {
+        sortBy = $("#sortBy").val();
+        move("first");
+    }
+
+    function updateSearch() {
+        search = $("#search").val();
+        move("first");
+    }
+
+    function updateRole() {
+        if ($("#role").val() == "ALL") {
+            role = "";
+        } else {
+            role = $("#role").val();
+        }
+        move("first");
+    }
+
+    function getMaxpage(msg) {
+        $.ajax({
+            url: 'Users/MaxPage',
+            type: 'GET',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("XSRF-TOKEN",
+                    $('input:hidden[name="__RequestVerificationToken"]').val());
+            },
+            success: function (response) {
+                maximumPaginationPage = parseInt(response);
+
+                if (maximumPaginationPage > $("#pageSelect option").length) {
+                    $("#pageSelect").empty();
+                    for (let i = 1; i <= maximumPaginationPage; i++) {
+
+                        var option = $('<option></option>')
+                            .val(i)
+                            .text('Page ' + i);
+                        $("#pageSelect").append(option);
+                    }
+                }
+
+                if (msg != "lastPage") {
+                    $("#pageSelect").prop('selectedIndex', pageNumber - 1);
+                } else {
+                    pageNumber = maximumPaginationPage;
+                    $("#pageSelect").prop('selectedIndex', pageNumber - 1);
+                    loadPage();
+                }
+
+            }, error: function (error) {
+                showToast("Lấy số lượng page tối đa thất bại", error, "bi bi-exclamation-triangle", "danger");
+            }
+        });
+    }
+
+    // =========
+
+    function validateData() {
+        if ($.trim($("#Email").val()) == "") {
+            showToast("Thông báo", "Thiếu email người dùng", "bi bi-exclamation-triangle", "danger");
+            return false;
+        } else if ($.trim($("#Role").val()) == "") {
+            showToast("Thông báo", "Thiếu vai trò người dùng", "bi bi-exclamation-triangle", "danger");
+            return false;
+        } else if ($.trim($("#Username").val()) == "") {
+            showToast("Thông báo", "Thiếu username của người dùng", "bi bi-exclamation-triangle", "danger");
+            return false;
+        }
+        return true;
+    }
+
+    function escapeHtml(unsafe) {
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
 
     document.addEventListener("DOMContentLoaded", function () {
 
@@ -226,6 +351,22 @@
         pageNumber = selectedValue;
         loadPage();
     }
+
+
+    function formatDateForInput(dateStr) {
+
+        let parts = dateStr.split('/');
+
+        let day = parseInt(parts[0]);
+        let month = parseInt(parts[1]);
+        let year = parseInt(parts[2]);
+
+        let sDay = (day < 10 ? "0" + day : day);
+        let sMonth = (month < 10 ? "0" + month : month);
+
+        return `${year}-${sMonth}-${sDay}`;
+    }
+
 
     function move(page) {
         if (pageNumber == page) return;
@@ -253,35 +394,36 @@
                 break;
             }
             case 'last': {
-                pageNumber = maximumPaginationPage;
-                document.getElementById("pageSelect").selectedIndex = document.getElementById("pageSelect").options.length - 1;
-                loadPage();
+                getMaxpage("lastPage");
                 break;
             }
         }
     }
     function loadPage() {
         $.ajax({
-            url: `Users/Page?index=${pageNumber}`,
+            url: `Users/Page?index=${pageNumber}&search=${search}&orderBy=${sortBy}&role=${role}`,
             type: 'GET',
             success: function (data) {
+                getMaxpage();
 
                 const tableBody = $('#tableBody');
                 tableBody.empty();
                 let count = 0;
-                // console.log(data);
+
                 listOfUser = data;
 
                 for (const user of data) {
                     count++;
 
-                    let row = $('<tr>');
+                    let row = $('<tr style="text-align:center;">');
                     if (user.isDeleted) {
                         row = $('<tr class="IsDeleted">');
                     }
                     row.append('<td>' + user["id"] + '</td>');
-                    row.append('<td>' + user["email"] + '</td>');
-                    row.append('<td>' + user["username"] + '</td>');
+                    row.append('<td>' + escapeHtml(String(user["email"])) + '</td>');
+                    row.append('<td>' + escapeHtml(String(user["username"])) + '</td>');
+                    row.append('<td>' + user["createdDate"] + '</td>');
+                    row.append('<td>' + user["updatedDate"] + '</td>');
                     row.append('<td>' + user["isDeleted"] + '</td>');
 
                     const actionCell = $('<td>');
@@ -298,6 +440,8 @@
                     newRow.append('<td>\u00A0</td>');
                     newRow.append('<td>\u00A0</td>');
                     newRow.append('<td>\u00A0</td>');
+                    newRow.append('<td>\u00A0</td>');
+                    newRow.append('<td>\u00A0</td>');
                     tableBody.append(newRow);
                 }
             },
@@ -309,6 +453,8 @@
 
     }
     function TryEdit() {
+        if (!validateData()) return;
+
         const nguoiDung = {
             id: document.getElementById('UserId').value,
             email: document.getElementById('Email').value,

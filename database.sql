@@ -87,18 +87,18 @@ CREATE TABLE courses (
 
 -- Users
 
-INSERT INTO users (email, password, role, username, is_deleted)
+INSERT INTO users (email, password, role, username, is_deleted, created_at, updated_at)
 VALUES 
-('user1@example.com', '$2a$11$b8DOklxbErjeahwaYEQ.q.BOcx4drrEqK2NMYU6D1Ox2EKFO2ov5i', 'Student', 'user1', 0),
-('user2@example.com', '$2a$11$b8DOklxbErjeahwaYEQ.q.BOcx4drrEqK2NMYU6D1Ox2EKFO2ov5i', 'Student', 'user2', 0),
-('user3@example.com', '$2a$11$b8DOklxbErjeahwaYEQ.q.BOcx4drrEqK2NMYU6D1Ox2EKFO2ov5i', 'Student', 'user3', 0),
-('user4@example.com', '$2a$11$b8DOklxbErjeahwaYEQ.q.BOcx4drrEqK2NMYU6D1Ox2EKFO2ov5i', 'Student', 'user4', 0),
-('user5@example.com', '$2a$11$b8DOklxbErjeahwaYEQ.q.BOcx4drrEqK2NMYU6D1Ox2EKFO2ov5i', 'Student', 'user5', 0),
-('user6@example.com', '$2a$11$b8DOklxbErjeahwaYEQ.q.BOcx4drrEqK2NMYU6D1Ox2EKFO2ov5i', 'Student', 'user6', 0),
-('lecturer1@example.com', '$2a$11$b8DOklxbErjeahwaYEQ.q.BOcx4drrEqK2NMYU6D1Ox2EKFO2ov5i', 'Lecture', 'lecturer1', 0),
-('lecturer2@example.com', '$2a$11$b8DOklxbErjeahwaYEQ.q.BOcx4drrEqK2NMYU6D1Ox2EKFO2ov5i', 'Lecture', 'lecturer2', 0),
-('lecturer3@example.com', '$2a$11$b8DOklxbErjeahwaYEQ.q.BOcx4drrEqK2NMYU6D1Ox2EKFO2ov5i', 'Lecture', 'lecturer3', 0),
-('lecturer4@example.com', '$2a$11$b8DOklxbErjeahwaYEQ.q.BOcx4drrEqK2NMYU6D1Ox2EKFO2ov5i', 'Lecture', 'lecturer4', 0);
+('user1@example.com', '$2a$11$b8DOklxbErjeahwaYEQ.q.BOcx4drrEqK2NMYU6D1Ox2EKFO2ov5i', 'Student', 'user1', 0, '07-20-2024' ,'07-20-2024'),
+('user2@example.com', '$2a$11$b8DOklxbErjeahwaYEQ.q.BOcx4drrEqK2NMYU6D1Ox2EKFO2ov5i', 'Student', 'user2', 0, '07-22-2024', '07-22-2024'),
+('user3@example.com', '$2a$11$b8DOklxbErjeahwaYEQ.q.BOcx4drrEqK2NMYU6D1Ox2EKFO2ov5i', 'Student', 'user3', 0, '07-18-2024', '07-20-2024'),
+('user4@example.com', '$2a$11$b8DOklxbErjeahwaYEQ.q.BOcx4drrEqK2NMYU6D1Ox2EKFO2ov5i', 'Student', 'user4', 0, '07-19-2024', '07-19-2024'),
+('user5@example.com', '$2a$11$b8DOklxbErjeahwaYEQ.q.BOcx4drrEqK2NMYU6D1Ox2EKFO2ov5i', 'Student', 'user5', 0, '07-20-2024', '07-20-2024'),
+('user6@example.com', '$2a$11$b8DOklxbErjeahwaYEQ.q.BOcx4drrEqK2NMYU6D1Ox2EKFO2ov5i', 'Student', 'user6', 0, '06-28-2024', '06-28-2024'),
+('lecturer1@example.com', '$2a$11$b8DOklxbErjeahwaYEQ.q.BOcx4drrEqK2NMYU6D1Ox2EKFO2ov5i', 'Lecture', 'lecturer1', 0, '07-20-2024', '07-20-2024'),
+('lecturer2@example.com', '$2a$11$b8DOklxbErjeahwaYEQ.q.BOcx4drrEqK2NMYU6D1Ox2EKFO2ov5i', 'Lecture', 'lecturer2', 0, '07-15-2024', '07-20-2024'),
+('lecturer3@example.com', '$2a$11$b8DOklxbErjeahwaYEQ.q.BOcx4drrEqK2NMYU6D1Ox2EKFO2ov5i', 'Lecture', 'lecturer3', 0, '07-10-2024', '07-10-2024'),
+('lecturer4@example.com', '$2a$11$b8DOklxbErjeahwaYEQ.q.BOcx4drrEqK2NMYU6D1Ox2EKFO2ov5i', 'Lecture', 'lecturer4', 0, '07-01-2024', '07-05-2024');
 
 
 -- Courses
@@ -344,4 +344,15 @@ AS
 BEGIN
 	select @revenues = SUM(c.price) from enroled_courses ec
 	join courses c on c.id = ec.course_id
+END
+
+GO
+
+CREATE PROC GetMonthRevenues 
+@revenues float out
+AS 
+BEGIN
+	select @revenues = SUM(c.price) from enroled_courses ec
+	join courses c on c.id = ec.course_id
+	where MONTH(ec.created_at) = MONTH(GETDATE()) and YEAR(ec.created_at) = YEAR(GETDATE())
 END

@@ -27,7 +27,10 @@
 
     <div class="container">
 
-        <div style="display:flex; flex-direction: row-reverse;">
+        <div> 
+            <p id="msg">Số lượng tối đa : </p>
+        </div>
+        <div id="CreateDiv" style="display:flex; flex-direction: row-reverse;">
             <div class="icon" onclick="Create()">
                 Create
                 <img style="margin-left:5px;" src="https://www.svgrepo.com/show/522232/plus-square.svg" witdh="16" height="16" />
@@ -102,6 +105,9 @@
 </div>
 <script>
     var listQuiz = @Html.Raw(quizzJson);
+
+    const maximumQuiz = 20;
+    
     let currEditQuizId;
 
     function ShowQuestion(questionId) {
@@ -150,6 +156,11 @@
                         `;
             $('#QuizzList').append(quizHtml);
         });
+
+        $("#msg").text("Số lượng tối đa ( " + listQuiz.length + " / " + maximumQuiz + " )");
+        if (listQuiz.length >= maximumQuiz) {
+            $("#CreateDiv").hide();
+        }
     }
 
     function validateData() {

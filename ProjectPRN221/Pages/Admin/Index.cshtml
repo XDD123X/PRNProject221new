@@ -1,10 +1,19 @@
 ﻿@page
 @model ProjectPRN221.Pages.Admin.IndexModel
 @using ProjectPRN221.Models;
+@using System.Text.Json
 @{
     Layout = "Layout";
+    List<String> courseName = ViewData["courses"] as List<String>;
+    string nameJson = JsonSerializer.Serialize(courseName);
+    List<float> eachRevenues = ViewData["eachRevenues"] as List<float>;
+    string listRevenues = JsonSerializer.Serialize(eachRevenues);
+
 }
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" integrity="sha512-r22gChDnGvBylk90+2e/ycr3RVrDi8DIOkIGNhJlKfuyQM4tIRAI062MaV8sfjQKYVGjOBaZBOA87z+IhZE9DA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
 <style>
     .header h2 {
         text-align: center;
@@ -18,9 +27,9 @@
     }
 
     .content {
-        width: 400px;
+        width: 800px;
         background: white;
-        padding: 20px 20px;
+        padding: 0px 0px;
         margin: auto auto;
         transition: margin-left 0.5s ease-out;
     }
@@ -30,24 +39,44 @@
         }
 
     .card {
-        width: 300px;
+        /* width: 300px; */
         padding: 20px;
         border: 1px solid #ccc;
         border-radius: 8px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         margin: 20px;
+        text-align: center;
     }
 
-    /* Style for the card title */
     .card-title {
         font-size: 18px;
         font-weight: bold;
         margin-bottom: 10px;
     }
 
-    /* Style for the card content */
     .card-content {
         font-size: 16px;
+    }
+
+    .card-container {
+        display: grid;
+        
+        grid-template-columns: repeat(2, 1fr);
+
+        justify-content: center;
+        align-items: center;
+    }
+
+    .canvasContainer {
+        width: 600px;
+        height: 300px;
+        text-align: center;
+        margin: 0 auto;
+        margin-bottom: 20px;
+    }
+    #userChart {
+        margin: 0 auto;
+        margin-bottom: 20px;
     }
 </style>
 
@@ -55,55 +84,98 @@
     <div class="header">
         <h2>Statistic</h2>
     </div>
-    @* <canvas id="userChart" width="400" height="200"></canvas> *@
-    <div class="attribute">
-        <div class="card">
-            <div class="card-title">Total Revenues</div>
-            <div class="card-content">@ViewData["TotalRevenues"]$</div>
+    <div class="canvasContainer">
+
+
+        <canvas id="userChart" width="600" height="300"></canvas>
+    </div>
+
+        <div class="card-container">
+            <div class="card">
+                <div class="card-title">Total Revenues (This Month)</div>
+                <div class="card-content">@ViewData["MonthRevenues"]$</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Total Revenues</div>
+                <div class="card-content">@ViewData["TotalRevenues"]$</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Total Users (This Month)</div>
+                <div class="card-content">@ViewData["UserInMonth"]</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Total Users </div>
+                <div class="card-content">@ViewData["TotalUser"]</div>
+            </div>
         </div>
 
-        <!-- Card for Total Users created in Month -->
-        <div class="card">
-            <div class="card-title">Total Users (This Month)</div>
-            <div class="card-content">@ViewData["TotalUsers"]</div>
-        </div>
-    </div>
+
+    <button id="downloadCSV" onclick="downloadExcel()">Download CSV</button>
 </div>
 <script>
+    let listOfCourse;
+    let listOfRevenues;
+
     function init() {
         let Menulist = document.querySelectorAll(".Menulist li");
         Menulist.forEach((item) => item.classList.remove("active"));
         const liElement = document.querySelector(".Home");
         liElement.classList.toggle("active");
 
-        // var userData = {
-        //     labels: ["New Users"],
-        //     datasets: [
-        //         {
-        //             data: [@ViewData["NewUser"]],
-        //             backgroundColor: ["rgba(75,192,192,0.2)", "rgba(255,99,132,0.2)"],
-        //             borderColor: ["rgba(75,192,192,1)", "rgba(255,99,132,1)"],
-        //             borderWidth: 1
-        //         }
-        //     ]
-        // };
+        var userData = {
+            labels: ["Lecture", "Student"],
+            datasets: [
+                {
+                    data: [@ViewData["Student"], @ViewData["Lecture"]],
+                    backgroundColor: ["rgba(75,192,192,0.2)", "rgba(255,99,132,0.2)"],
+                    borderColor: ["rgba(75,192,192,1)", "rgba(255,99,132,1)"],
+                    borderWidth: 1
+                }
+            ]
+        };
 
-        // // Get the canvas element
-        // var ctx = document.getElementById('userChart').getContext('2d');
+        // Get the canvas element
+        var ctx = document.getElementById('userChart').getContext('2d');
 
-        // // Create a doughnut chart
-        // var userChart = new Chart(ctx, {
-        //     type: 'doughnut',
-        //     data: userData,
-        //     options: {
-        //         plugins: {
-        //             title: {
-        //                 display: true,
-        //                 text: 'User Upgrade Account Chart'
-        //             }
-        //         }
-        //     }
-        // });
+        // Create a doughnut chart
+        var userChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: userData,
+            options: {
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Student Lecture Distribution'
+                    }
+                }
+            }
+        });
+    }
+
+    function downloadExcel() {
+        const canvas = document.getElementById('userChart');
+        const chartImage = canvas.toDataURL('image/png');
+
+        const wb = XLSX.utils.book_new();
+
+         listOfCourse = @Html.Raw(nameJson);
+
+         listOfRevenues = @Html.Raw(listRevenues);
+
+        const ws_data = [
+            ["Total Revenues (This Month)", "Total Revenues", "Total Users (This Month)", "Total Users", "Chart Image"],
+            [@ViewData["MonthRevenues"], @ViewData["TotalRevenues"], @ViewData["UserInMonth"], @ViewData["TotalUser"], chartImage],
+            listOfCourse,
+            listOfRevenues,
+        ];
+        
+
+        const ws = XLSX.utils.aoa_to_sheet(ws_data);
+        XLSX.utils.book_append_sheet(wb, ws, "Statistics");
+
+        // Generate Excel file
+        XLSX.writeFile(wb, 'detail_data.xlsx');
     }
 
     window.onload = init;
