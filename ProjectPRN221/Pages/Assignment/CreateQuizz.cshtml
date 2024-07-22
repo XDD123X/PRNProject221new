@@ -1,10 +1,11 @@
 ﻿@page "{handler?}"
 @model ProjectPRN221.Pages.Assignment.CreateQuizzModel
 @using System.Text.Json
+@using System.Text.Json.Serialization
 
 @using ProjectPRN221.Models
 @{
-    List<Quiz> quizz = ViewData["quizz"] as List<Quiz>;
+    List<Quiz> quizz = ViewData["quizz"] as List<Quiz>; 
     string quizzJson = JsonSerializer.Serialize(quizz);
     int courseId = (int)ViewData["courseId"];
 }

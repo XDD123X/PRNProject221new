@@ -9,16 +9,19 @@ namespace ProjectPRN221.Pages.Assignment
         PROJECT_PRUContext dbcontext = new PROJECT_PRUContext();
         public IActionResult OnGet(int courseId)
         {
-            Course c = dbcontext.Courses.FirstOrDefault(p => p.Id == courseId);
-            if (c == null) return RedirectToPage("/Courses/Index");
-
             string? currUserID = HttpContext.Session.GetString("Session_User");
-            if (currUserID == null) return RedirectToPage("/Authentication/login");
+            if (currUserID == null)
+            {
+
+                return RedirectToPage("/Authentication/login");
+            }
 
             User u = dbcontext.Users.FirstOrDefault(p => p.Id == long.Parse(currUserID));
-            if (u.Role != "Lecture" && u.Id != c.Id)
+            if (u.Role != "Lecture" && u.Id != courseId)
             {
-                return RedirectToAction("/Courses/Index");
+
+                return RedirectToPage("/Courses/Index");
+
             }
 
             ViewData["courseId"] = courseId;
