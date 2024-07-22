@@ -90,18 +90,39 @@ namespace ProjectPRN221.Pages.Courses
                 return NotFound();
             }
 
-            var course = await _context.Courses.FindAsync(id);
+            var course = await _context.Courses
+                .Include(c => c.Explodes)
+                .Include(c => c.Quizzes)
+                .Include(c => c.EnroledCourses)
+                .FirstOrDefaultAsync(c => c.Id == id);
 
             if (course != null)
             {
                 if (currUser.Role.Equals("Lecture") && currUser.Id == course.UserId)
                 {
+                    if (course.Explodes != null)
+                    {
+                        _context.Explodes.RemoveRange(course.Explodes);
+                    }
+
+                    if (course.Quizzes != null)
+                    {
+                        _context.Quizzes.RemoveRange(course.Quizzes);
+                    }
+
+                    if (course.EnroledCourses != null)
+                    {
+                        _context.EnroledCourses.RemoveRange(course.EnroledCourses);
+                    }
+
                     _context.Courses.Remove(course);
                     await _context.SaveChangesAsync();
+
+                    return RedirectToPage("./Index");
                 }
             }
 
-            return RedirectToPage("./Index");
+                return RedirectToPage("./Index");
         }
 
         public async Task<IActionResult> OnPostEnrollAsync(long? uid, long? cid)
