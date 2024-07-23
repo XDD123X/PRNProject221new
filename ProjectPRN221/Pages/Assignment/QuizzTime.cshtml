@@ -33,7 +33,7 @@
         @if (!isViewing)
         {
             <form id="quizForm" asp-page-handler="Answer" method="POST">
-                @foreach (Quiz q in thisCourse.Quizzes)
+                @foreach (Quiz q in thisCourse.Quizzes.Where(p => p.IsDeleted == false).ToList())
                 {
                     questionNumber++;
                     <div class="Question-@questionNumber">

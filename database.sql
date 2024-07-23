@@ -312,12 +312,12 @@ BEGIN
 	SELECT @total_question = COUNT(*) from history_quizzes hq 
 	LEFT JOIN quizzes q on hq.quizz_id = q.id
 	LEFT JOIN courses c on c.id = q.course_id
-	where c.id = @id_course and hq.user_id = @id_user
+	where c.id = @id_course and hq.user_id = @id_user;
 	SELECT @right_answer = COUNT(*) from history_quizzes hq 
 	LEFT JOIN quizzes q on hq.quizz_id = q.id
 	LEFT JOIN courses c on c.id = q.course_id
 	where c.id = @id_course and hq.user_id = @id_user and q.answer = hq.answer
-    SET	@point = (@right_answer / @total_question) * 10.0;
+    SET	@point = (@right_answer  * 10.0 / @total_question);
 END
 
 GO

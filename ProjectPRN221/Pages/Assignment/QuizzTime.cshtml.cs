@@ -44,6 +44,7 @@ namespace ProjectPRN221.Pages.Assignment
             if (IsViewing)
             {
                 float points = await GetPoint(UserID, CourseID);
+                await Console.Out.WriteLineAsync(points.ToString());
                 ViewData["point"] = points;
                 ViewData["history"] = DBContext.HistoryQuizzes.Include(p => p.Quizz).Where(p => p.Quizz.CourseId == CourseID).ToList();
             }
@@ -92,8 +93,13 @@ namespace ProjectPRN221.Pages.Assignment
 
             DBContext.SaveChanges();
 
-            ViewData["point"] = point;
-            return await OnGet(courseID, userId, true);
+            ViewData["point"] = point; 
+            ViewData["history"] = DBContext.HistoryQuizzes.Include(p => p.Quizz).Where(p => p.Quizz.CourseId == courseID).ToList();
+            ViewData["course"] = DBContext.Courses.Include(p => p.Quizzes).FirstOrDefault(p => p.Id == courseID);
+            
+            ViewData["isViewing"] = true;
+
+            return Page();
         }
 
         public async Task<float> GetPoint(long IdUser, long courseId)
