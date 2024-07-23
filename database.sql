@@ -317,7 +317,7 @@ BEGIN
 	LEFT JOIN quizzes q on hq.quizz_id = q.id
 	LEFT JOIN courses c on c.id = q.course_id
 	where c.id = @id_course and hq.user_id = @id_user and q.answer = hq.answer
-    SET	@point = (@right_answer  * 10.0 / @total_question);2
+    SET	@point = (@right_answer  * 10.0 / @total_question);
 	SELECT @point;
 END
 
